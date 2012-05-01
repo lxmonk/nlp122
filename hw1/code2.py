@@ -1,15 +1,15 @@
 from __future__ import division
 from collections import defaultdict, Counter
-from numpy import log10
 import nltk
 import pylab
+
 
 def PlotNumberOfTags(corpus):
     word_tag_dict = defaultdict(set)
 
     for (word, tag) in corpus:
         word_tag_dict[word].add(tag)
-
+    # using Counter for efficiency (leaner than FreqDist)
     C = Counter(len(val) for val in word_tag_dict.itervalues())
 
     pylab.subplot(211)
@@ -32,6 +32,9 @@ def PlotNumberOfTags(corpus):
     
     pylab.show()
 
+
+
+    
 def MostAmbiguousWords(corpus, N):
     word_tag_dict = defaultdict(set)
 
@@ -61,6 +64,9 @@ def example(word, tag, corpus):
     sent = corpus[idx-10:idx] + [(word.upper(), tag)] + corpus[idx+1:idx+11]
     return ' '.join(word for (word, tag) in sent)
 
+
+
+    
 def correl_plot3D(corpus):
     from mpl_toolkits.mplot3d import Axes3D
 
@@ -108,7 +114,33 @@ def correl_plot3D(corpus):
     pylab.show()
     
 
-    
+
+from nltk.tag.api import TaggerI
+import nltk
+
+class MyUnigramTagger(TaggerI):
+    def __init__(self, train=None, model=None,
+                 backoff=None, cutoff=0, verbose=False):
+        if type(train[0]) == tuple:
+            pass
+        elif type(train[0][0]) == tuple:
+            train = flatten(train)            
+        self.cfd = nltk.ConditionalFreqDist(train)
+        self.default_tag = nltk.FreqDist(tag for (word, tag) in train).max()
+        self.wordset = set(word for (word, tag) in train)
+                        
+    def tag(self, tokens):
+        # docs inherited from TaggerI
+        return zip(tokens, [self.cfd[word].max()
+                            if word in self.wordset
+                            else self.default_tag
+                            for word in tokens])
+            
+# This really should have come with either itertools or standard lib..
+from itertools import chain
+def flatten(listOfLists):
+    "Flatten one level of nesting"
+    return chain.from_iterable(listOfLists)
     
 if __name__ == '__main__':
     pass

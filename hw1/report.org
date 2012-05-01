@@ -71,6 +71,10 @@ This is the code I used:
 #+INCLUDE: "code.py" src python
 
 ** Gathering basic statistics
+   *IMPORTANT:* the code snippets in this section use the =tagged_words=
+   corpus (NOT =tagged_sents=).
+
+
    To create Figure 1:
    
 #+CAPTION: *Figure 1*
@@ -78,10 +82,10 @@ This is the code I used:
    [[file:ambiguity-fig1.png]]
    
    I used the following code:
-#+INCLUDE "code2.py" src python :lines "1-32"
+#+INCLUDE "code2.py" src python :lines "1-35"
    
    For the requested functions, This code was used:
-#+INCLUDE "code2.py" src python :lines "34-63"
+#+INCLUDE "code2.py" src python :lines "34-68"
 
 ** Is there a correlation between word size or frequency and ambiguity level?
    To try and answer this question, I plotted the requested 3D graph
@@ -115,10 +119,11 @@ statistical significance.
 
 This is the code used (with minor changes or commenting
 out, to create the different graphs):
-#+INCLUDE "code2.py" src python :lines "64-109"
+#+INCLUDE "code2.py" src python :lines "66-116"
 * Unigram and Affix Tagger [0/2]
 ** TODO Unigram Tagger
-
+   This is the code for the Unigram Tagger:
+#+INCLUDE "code2.py" src python :lines "118-148"
 ** TODO Affix Tagger
 * Fine-grained Error Analysis [0/5]
 ** TODO Known vs. Unknown Accuracy
@@ -126,3 +131,10 @@ out, to create the different graphs):
 ** TODO Confusion Matrix
 ** TODO SensAitivity to the Size and Structure of the Training Set: Cross-Validation
 ** TODO Stratified Samples
+
+
+
+
+
+
+

@@ -284,7 +284,12 @@ if __name__ == '__main__':
 <h3 id="sec-1-2"><span class="section-number-3">1.2</span> Gathering basic statistics</h3>
 <div class="outline-text-3" id="text-1-2">
 
-<p>   To create Figure 1:
+<p>   <b>IMPORTANT:</b> the code snippets in this section use the <code>tagged_words</code>
+   corpus (NOT <code>tagged_sents</code>).
+</p>
+
+<p>
+   To create Figure 1:
 </p>
 
 <div class="figure">
@@ -299,16 +304,16 @@ if __name__ == '__main__':
 
 <pre class="example">from __future__ import division
 from collections import defaultdict, Counter
-from numpy import log10
 import nltk
 import pylab
+
 
 def PlotNumberOfTags(corpus):
     word_tag_dict = defaultdict(set)
 
     for (word, tag) in corpus:
         word_tag_dict[word].add(tag)
-
+    # using Counter for efficiency (leaner than FreqDist)
     C = Counter(len(val) for val in word_tag_dict.itervalues())
 
     pylab.subplot(211)
@@ -328,6 +333,9 @@ def PlotNumberOfTags(corpus):
     pylab.xlabel('Number of Tags per Word')
     pylab.ylabel('Words With This Number of Tags (Log)')
     pylab.legend(loc=0)
+
+    pylab.show()
+
 </pre>
 
 
@@ -337,6 +345,9 @@ def PlotNumberOfTags(corpus):
 
 
 <pre class="example">
+
+
+
 def MostAmbiguousWords(corpus, N):
     word_tag_dict = defaultdict(set)
 
@@ -365,6 +376,8 @@ def example(word, tag, corpus):
     idx = corpus.index((word, tag))
     sent = corpus[idx-10:idx] + [(word.upper(), tag)] + corpus[idx+1:idx+11]
     return ' '.join(word for (word, tag) in sent)
+
+
 </pre>
 
 
@@ -417,7 +430,11 @@ out, to create the different graphs):
 </p>
 
 
-<pre class="example">def correl_plot3D(corpus):
+<pre class="example">
+
+
+
+def correl_plot3D(corpus):
     from mpl_toolkits.mplot3d import Axes3D
 
     word_tag_dict = defaultdict(set)
@@ -462,6 +479,7 @@ out, to create the different graphs):
     pylab.ylabel('word length')
 
     pylab.show()
+
 </pre>
 
 </div>
@@ -480,6 +498,41 @@ out, to create the different graphs):
 <h3 id="sec-2-1"><span class="section-number-3">2.1</span> Unigram Tagger</h3>
 <div class="outline-text-3" id="text-2-1">
 
+<p>   This is the code for the Unigram Tagger:
+</p>
+
+
+<pre class="example">from nltk.tag.api import TaggerI
+import nltk
+
+class MyUnigramTagger(TaggerI):
+    def __init__(self, train=None, model=None,
+                 backoff=None, cutoff=0, verbose=False):
+        if type(train[0]) == tuple:
+            self.cfd = nltk.ConditionalFreqDist(train)
+            self.default_tag = nltk.FreqDist(tag for (word, tag) in train).max()
+            self.wordset = set(word for (word, tag) in train)
+
+        elif type(train[0][0]) == tuple:
+            flattened_train = flatten(train)
+            self.cfd = nltk.ConditionalFreqDist(flattened_train)
+            self.default_tag = nltk.FreqDist(tag for (word, tag) in flattened_train).max()
+            self.wordset = set(word for (word, tag) in flattened_train)
+
+
+    def tag(self, tokens):
+        # docs inherited from TaggerI
+        return zip(tokens, [self.cfd[word].max()
+                            if word in self.wordset
+                            else self.default_tag
+                            for word in tokens])
+
+# This really should have come with either itertools or standard lib..
+from itertools import chain
+def flatten(listOfLists):
+    "Flatten one level of nesting"
+    return chain.from_iterable(listOfLists)
+</pre>
 
 </div>
 
@@ -536,6 +589,13 @@ out, to create the different graphs):
 <div id="outline-container-3-5" class="outline-3">
 <h3 id="sec-3-5"><span class="section-number-3">3.5</span> Stratified Samples</h3>
 <div class="outline-text-3" id="text-3-5">
+
+
+
+
+
+
+
 
 </div>
 </div>
