@@ -1,0 +1,94 @@
+#+TITLE:     NLP12 Assignment 1: Parts of Speech Tagging
+#+AUTHOR:    Aviad Reich, ID 052978509
+#+EMAIL:     avi.rei@gmail.com
+#+DATE:      2012-03-19 Mon
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:1-3 \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+#+STYLE: <link rel="stylesheet" type="text/css" href="nlp.css" media="all" />
+
+#+TEXT: [TABLE-OF-CONTENTS]
+
+NOTES: In this assignment, the new "[[http://docs.python-requests.org/en/latest/index.html#][requests]]" python library was used,
+and not =urllib=, as suggested in the tutorial. The web (and python)
+have evolved since python 2.5, used in the nltk book, was released
+in 2008. \\
+Additionally, since =xgoogle= seemed to return very few results (1-3 on
+most searches), I used [[http://breakingcode.wordpress.com/2010/06/29/google-search-python/][this script]] instead.
+
+* Data Exploration [1/2]
+** DONE Gathering and cleaning up data
+   CLOSED: [2012-04-30 Mon 22:44]
+
+1) *Errors met while dealing with the Google engine:* \\
+   Using the xgoogle library, only produced 1-3 result URLs for the
+   searches, so I tried several alternatives: the python-duckduckgo
+   library, but this only produced 1 result per query (duckduckgo only
+   supplies a 'zero-click' api). Eventually, I used [[http://breakingcode.wordpress.com/2010/06/29/google-search-python/][this script]], which
+   worked perfectly.
+   
+1) *Errors met while downloading the material from the Google hits:* \\
+   I had no trouble, and was using the "requests" library.
+   
+1) *Errors met while cleaning up the HTML pages:* \\
+   The built-in =nltk.clean_html= function did only a mediocre job
+   cleaning the contents of the web pages, leaving in some irrelevant
+   strings. Using the justext library worked perfectly.
+   
+1) *Errors met while segmenting the text into sentences and words:* \\
+   Headlines were not segmented in to different sentences, but were
+   instead included in the following sentence.
+   The em-dash (represented as "- -", without spaces) was not regarded as separating
+   between words when it should have been. For example, in: "sliding/N
+   movement- -the/DET days/N of/P heaving/VG" we can see the words
+   'movement' and 'the' *not* separated.
+
+1) *Errors met by the automatic tagger:* \\
+   When fed sentences that were correctly segmented to to words, and
+   were also complete, and valid - I had no corrections to
+   offer. Perhaps it's my lack of competence as a tagger for English
+   words.. 
+
+** TODO Manual Tagging:
+ Review the tagging of the new text separately (2 analyses) and
+ compare your tagging results. Report the list of words on which your
+ 2 manual tagging decisions are different (write a function to
+ compare two taggings of the same text saved in 2 different tagged
+ files.) Show the differences between each of your tags and the tags
+ produced by the automatic tagger. Report how long it took you to
+ check the tagging of 50 sentences.  
+
+
+This is the code I used:
+#+INCLUDE: "code.py" src python
+
+** Gathering basic statistics
+   To create Figure 1:
+   
+#+CAPTION: *Figure 1*
+#+ATTR_HTML: width="800"
+   [[file:ambiguity-fig1.png]]
+   
+   I used the following code:
+#+INCLUDE "code2.py" src python :lines "1-32"
+   
+   For the requested functions, This code was used:
+#+INCLUDE "code2.py" src python :lines "34-63"
+
+** Is there a correlation between word size or frequency and ambiguity level?
+* Unigram and Affix Tagger [0/1]
+** TODO ?? (delete this levele)
+* Fine-grained Error Analysis [0/5]
+** TODO Known vs. Unknown Accuracy
+** TODO Per Tag Precision and Recall
+** TODO Confusion Matrix
+** TODO SensAitivity to the Size and Structure of the Training Set: Cross-Validation
+** TODO Stratified Samples

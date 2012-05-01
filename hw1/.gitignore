@@ -1,0 +1,9 @@
+/.ropeproject/history
+/.ropeproject/objectdb
+/build/pip-delete-this-directory.txt
+/corpfile_*.txt
+/rawfile_*.txt
+/sentsfile_*.pkl
+/tokfile_*.pkl
+/tokfile_*.txt
+

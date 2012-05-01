@@ -1,0 +1,427 @@
+<HTML> 
+<HEAD> 
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<link rel="stylesheet" href="nlp.css" type="text/css" media="all" /> 
+<TITLE>NLP12 Assignment 1: Parts of Speech Tagging: Exploring Corpora, Error Analysis</TITLE> 
+</HEAD> 
+ 
+<BODY> 
+ 
+<h1>Assignment 1</h1>
+
+<h2>Due: Thursday 3 May 2012 Midnight</h2>
+<a href='http://www.cs.bgu.ac.il/~elhadad/nlp12.html'>Natural Language Processing - Spring 2012 Michael Elhadad</a>
+<p/>
+This assignment covers the topic of statistical models of parts of speech tagging.
+The objective is:
+<ol>
+<li>Learn how to use Python and NLTK
+<li>Learn how to access an annotated text corpus 
+<li>Learn how to annotate and extend a text corpus 
+<li>Learn how to access text resources on the Internet and clean it before it can be annotated
+<li>Learn how to explore the statistical properties of a corpus
+<li>Learn to train and evaluate simple tagging models
+</ol>
+
+
+<p/>
+Submit your solution in the form of an HTML file, using the same <a href="nlp.css">CSS</a> as this page
+with code inside &lt;pre&gt; tags.  Images should be submitted as PNG or JPG files.  The whole code
+should also be submitted as a separate folder with all necessary code to run the questions separated
+in clearly documented functions.
+
+<h2>Parts of Speech Tagging</h2>
+
+<ol>
+<li><a href="#data">Data Exploration</a>
+   <ol>
+   <li><a href="#crawl">Gathering and cleaning up data</a></li>
+   <li><a href="#explore">Gathering basic statistics</a></li>
+   <li><a href="#correlate">Is there a correlation between word size or frequency and ambiguity level?</a></li>
+   </ol>
+</li>
+<li><a href="#unigram">Unigram and Affix Tagger</a></li>
+<li><a href="#error">Fine-grained Error Analysis</a></li>
+   <ol>
+   <li><a href="#known">Known vs. Unknown Accuracy</a></li>
+   <li><a href="#pertag">Per Tag Precision and Recall</a></li>
+   <li><a href="#confusion">Confusion Matrix</a></li>
+   <li><a href="#size">Sensitivity to the Size and Structure of the Training Set: Cross-Validation</a></li>
+   <li><a href="#stratified">Stratified Samples</a></li>
+   </ol>
+</ol>
+
+<a name="data"></a>
+<h3>Data Exploration</h3>
+
+<a name="crawl"></a>
+<h4>Gathering and Cleaning Up Data</h4>
+
+When we discussed the task of POS tagging in class, we assumed the text comes in a "clean" form: segmented in sentences and in words.
+We ran experiments on a clean corpus (correctly segmented) and obtained results of about 90% accuracy.  In this question, we want to 
+get a feeling of how difficult it is to clean real-world data.  Please read the tutorial in 
+<a href="http://nltk.googlecode.com/svn/trunk/doc/book/ch03.html">Chapter 3</a> of the NLTK book.  This chapter explains how to access
+"raw text" and clean it up: remove HTML tags, segment in sentences and in words.
+<p/>
+
+Lookup at the data of the Brown corpus as it is stored in the nltk_data folder (by default, it is in a folder named like C:\nltk_data\corpora\brown under Windows).
+The format of the corpus is quite simple.  We will attempt to add a new "section" to this corpus.
+<p/>
+
+Look at the
+following <a href="http://www.catonmat.net/blog/python-library-for-google-search/">Python
+Library for Google Search</a>.  This library allows you to send
+queries to Google and download the results in a very simple manner in
+Python.  To install this library, just open the zip file from
+the <a href='http://www.catonmat.net/download/xgoogle.zip'>download</a>
+site in your Python library (under /python/lib/xgoogle).  Test the
+library by running a simple test such as:
+<pre>
+from xgoogle.search import GoogleSearch, SearchError
+try:
+  gs = GoogleSearch("quick and dirty")
+  gs.results_per_page = 50
+  results = gs.get_results()
+  for res in results:
+    print res.title.encode('utf8')
+    print res.desc.encode('utf8')
+    print res.url.encode('utf8')
+    print
+except SearchError, e:
+  print "Search failed: %s" % e
+</pre>
+<p/>
+
+Choose a query to execute using the xgoogle package and gather about 10 hits from this site.  Download the pages that your query found.
+Use code similar to this script to clean up the HTML of these pages:
+<pre>
+url = "http://www.bbc.com/news/technology-17771962"
+html = urlopen(url).read()
+raw = nltk.clean_html(html)
+tokens = nltk.word_tokenize(raw)
+</pre>
+
+You will realize that cleaning HTML is not an easy task.
+The <a href="http://code.google.com/p/justext/">JusText</a> Python package does a very good job of cleaning up HTML by removing 
+boilerplate HTML code around "interesting text".  This <a href="http://tomazkovacic.com/blog/14/extracting-article-text-from-html-documents/">Blog article</a>
+explains how this task is performed.
+
+Save the resulting hits into clean text files.  Then run the best POS Tagger you have available from class on the resulting text files, using the simplified
+POS Brown tagset (19 tags).  Save the resulting tagged file into text files in the same format expected by the Brown corpus.  You should gather about 50 sentences.
+Look at the Python code under \Python27\Lib\site-packages\nltk\corpus\reader\tagged.py to see explanations on how the nltk Brown corpus reader works.
+<p/>
+
+Finally, manually review the tagged text and fix the errors you find.
+Put the manually tagged file into the nltk_data Brown corpus folder
+into one of the existing category (or if you are more ambitious in a
+new category in addition to 'news', 'editorial'...). Make sure the
+nltk corpus reader can read the new text you have just added to the
+Brown corpus.  
+<p/>
+
+Review the tagging of the new text separately (2 analyses) and compare
+your tagging results.  Report the list of words on which your 2 manual
+tagging decisions are different (write a function to compare two
+taggings of the same text saved in 2 different tagged files.)  Show
+the differences between each of your tags and the tags produced by the
+automatic tagger.  Report how long it took you to check the tagging of
+50 sentences.  <p/>
+
+Report qualitatively on the errors you observe during this pipeline:
+<ol>
+<li>Errors met while dealing with the Google engine</li>
+<li>Errors met while downloading the material from the Google hits</li>
+<li>Errors met while cleaning up the HTML pages</li>
+<li>Errors met while segmenting the text into sentences and words</li>
+<li>Errors met by the automatic tagger</li>
+</ol>
+
+
+<a name="explore"></a>
+<h4>Gathering Basic Statistics</h4>
+
+When we use a tagger that relies on lexical information (for each word form, what is the distribution of tags that can be assigned to the word), 
+a measure of the complexity of the POS task is related to the level of ambiguity of the word forms.  In this question, we want to explore the
+level of ambiguity present in our dataset.
+
+For all of this question, use the full Brown corpus distributed as part of NLTK.
+<p/>
+Write a function that plots the number of words having a given number of tags.
+The X-axis should show the number of tags and the Y-axis the number of words having
+exactly this number of tags.  Use the following example from the <a href='http://nltk.googlecode.com/svn/trunk/doc/book/ch05.html'>NLTK book</a> as an inspiration:
+<pre>
+def performance(cfd, wordlist):
+    lt = dict((word, cfd[word].max()) for word in wordlist)
+    baseline_tagger = nltk.UnigramTagger(model=lt, backoff=nltk.DefaultTagger('NN'))
+    return baseline_tagger.evaluate(brown.tagged_sents(categories='news'))
+
+def display():
+    import pylab
+    words_by_freq = list(nltk.FreqDist(brown.words(categories='news')))
+    cfd = nltk.ConditionalFreqDist(brown.tagged_words(categories='news'))
+    sizes = 2 ** pylab.arange(15)
+    perfs = [performance(cfd, words_by_freq[:size]) for size in sizes]
+    pylab.plot(sizes, perfs, '-bo')
+    pylab.title('Lookup Tagger Performance with Varying Model Size')
+    pylab.xlabel('Model Size')
+    pylab.ylabel('Performance')
+    pylab.show()
+</pre>
+
+Write a Python function that finds words with more than N observed tags.
+The function should return a ConditionalFreqDist object where the conditions are
+the words and the frequency distribution indicates the tag frequencies for each word.
+<p/>
+Write a test function that verifies that the words indeed have more than N distinct tags
+in the returned value.
+<p/>
+Write a function that given a word, finds one example of usage of the word with each of the
+different tags in which it can occur.
+
+<pre>
+# corpus can be the tagged_sentences or tagged_words according to what is most convenient
+>>> PlotNumberOfTags(corpus)
+
+...show a plot with axis: X - number of tags (1, 2...) and Y - number of words having this number of tags...
+
+>>> cfd = MostAmbiguousWords(corpus, 4)
+&lt;conditionalFrequency ...&gt;
+
+>>> TestMostAmbiguousWords(cfd, 4)
+All words occur with more than 4 tags.
+
+>>> ShowExamples('book', cfd, corpus)
+'book' as NN: ....
+'book' as VB: ....
+</pre>
+
+We expect this distribution to exhibit a "long tail" form.  Do you confirm this hypothesis?
+
+
+<a name="correlate"></a>
+<h4>Is there a correlation between word size or frequency and ambiguity level?</h4>
+
+When we discussed in class the notion of ambiguity in language, we mentioned a possible explanation of the prevalence
+of ambiguity in terms of balancing effort between speaker and hearer.  To explore this explanation, we are interested
+in investigating whether there is a correlation between a word length (in numbers of characters), a word frequency and 
+its level of ambiguity.
+
+Write a function that will draw a 3D plot with axes for:
+<ol>
+<li>Word length (in characters)
+<li>Word frequency
+<li>Word ambiguity
+</ol>
+
+(See the <a href='http://matplotlib.sourceforge.net/mpl_toolkits/mplot3d/tutorial.html'>Mplot3D tutorial</a> to find out how to 
+produce a 3D plot in Python.)
+
+Describe what you observe.  Does the plot support a hypothesis about correlation?
+
+
+<a name="unigram">
+<h3>Unigram and Affix Tagger</h3>
+
+We described in class the behavior of the Unigram and Affix Taggers.
+Both of these are implemented in nltk.  We will develop here an alternative simple implementation.
+
+<h4>Unigram Tagger</h4>
+
+Write a class SimpleUnigramTagger which directly inherits from nltk.TaggerI and implements a unigram tagger in the simplest possible manner.
+The code should be shorter than that of nltk which is based on the general case of ngram tagging.
+
+Verify that your tagger produces the same evaluation as the one provided in nltk.
+
+<h4>Affix Tagger</h4>
+
+We discussed in class the Affix tagger as a tagger which learns a dependency between suffixes of words and parts of speech tags.
+One of the issues we raised was: which mapping from suffix to POS is "reliable" enough to be used by the Affix tagger.
+The nltk.AffixTagger uses a notion of "useful context" to determine that a context predicts a POS tag in a reliable manner.
+(See the <a href='http://nltk.googlecode.com/svn/trunk/doc/api/nltk.tag.sequential-pysrc.html#ContextTagger._train'>source code</a> of
+the nltk.ContextTagger class from which AffixTagger derives.)  In this question, we want to explore the issue for the case of the SuffixTagger
+by exploiting the notion of entropy.  <a href='http://en.wikipedia.org/wiki/Information_theory#Entropy'>Entropy</a> measures the level
+of uncertainty in a distribution.  During training, the AffixTagger learns a mapping from suffix to a distribution of tags.
+We want to filter this mapping to only keep predictions where the entropy of the tags distribution is low (below a certain cutoff).
+We also want to make sure that we keep suffixes for which we have seen sufficiently many observations to obtain a reliable estimation
+of the tags distribution.
+
+Write a specific train method for the AffixTagger which filters the learned model according to this idea.  One of the parameters of this train method
+must be the cutoff below which we keep a (suffix to distribution) mapping.  
+
+We need then to select a good value for this prefix.  One way to do this is to optimize the cutoff parameter.  We do this by training
+the AffixTagger with various values of the cutoff over a range of values, and comparing the accuracy obtained by each model over the development set.  
+The optimized value of the parameter is the one that gives the best accuracy.  Write a method optimize_parameter() to perform this task.
+
+For this task, split the Brown corpus in 3 parts: training set is the first 80% of the sentences; development set the next 10%; test set will be the last 10%.
+
+<b>Note</b>: for all information theoretic computations, we compute 0xlog(0) = 0. This is important for the computation of H(p) = &Sigma;pxlog(p).
+
+Describe your observations: 
+<ol>
+<li>does entropy filtering improve accuracy?
+<li>how do you determine the range of values to test for the cutoff?
+<li>is the accuracy value evolving in a predictable manner as the cutoff varies?
+<li>describe the list of suffixes that are good tag predictors -- are you surprised by what you observe?
+</ol>
+
+<a name="error"></a>
+<h3>Fine-Grained Accuracy and Error Analysis</h3>
+
+<a name="known"></a>
+<h4>Known vs. Unknown Accuracy</h4>
+
+In the review of the taggers done in class, we reported the accuracy of each tagger using the TaggerI.evaluate()
+method.  This method computes the average number of words correctly tagged in a test dataset.
+<p/>
+We will now investigate more fine-grained accuracy metrics and error analysis tools.
+<p/>
+One of the most challenging task for taggers that learn from a training set is to decide how to tag
+<i>unknown words</i>.  Implement a function evaluate2(training_corpus) in the TaggerI interface 
+that reports accuracy for a trained tagger for known words and for unknown words.  (Propose a design
+to identify known words for a trained tagger.  Specify in details what it means that a chain of backoff 
+taggers "know" a word in their training.)
+<p/>
+Test the evaluate2() method on each of the taggers discussed in class: unigram, affix, regexp, bigram.
+<p/>
+
+<a name="pertag"></a>
+<h4>Per Tag Precision and Recall</h4>
+
+We are interested in checking the behavior of a tagger per tag.  This indicates which tags are most
+difficult to distinguish from other tags. Write a function which reports precision and recall of a tagger per tag.  
+These measures are defined as follows:
+<ol>
+<li>Precision for tag T: when the tagger predicts tag T, how often is it correct in the dataset.
+<li>Recall for tag T: out of all words tagged as T in the dataset, how many are tagged correctly.
+</ol>
+Precision and Recall per tag can be computed as a function of the true positive, true negative, 
+false positive and false negative counts for the tags:
+<ol>
+<li>True positive count (TP): number of words tagged as T both in the test set and by the tagger.
+<li>True negative count (TN): words tagged as non-T both in the test set and by the tagger.
+<li>False positive count (FP): words tagged as non-T in the test set and as T by the tagger.
+<li>False negative (FN): words tagged as T in the test set and as non-T by the tagger.
+</ol>
+Since there is a natural trade-off between Precision and Recall, we often measure a score that combines
+the two parameters and is called F-measure. The formula are:
+<pre>
+Precision(T) = TP / TP + FP
+
+Recall(T) = TP / TP + FN
+
+F-Measure(T) = 2 x Precision x Recall / (Recall + Precision) = 2TP / (2TP + FP + FN)
+</pre>
+All three measures are numbers between 0 and 1.
+<p/>
+
+Add the function MicroEvaluate(corpus_test) to the TaggerI interface that computes for the tagger
+TP, TN, FP, FN, Precision, Recall and F-measure.
+<p/>
+
+Propose a method to test these functions (think of extreme cases of taggers that would produce 
+results with expected precisions or recalls).
+<p/>
+Which tags are most difficult in the simplified tagset? In the full tagset?
+
+<a name="confusion"></a>
+<h4>Confusion Matrix</h4>
+
+A precious method to perform error analysis consists of computing the confusion matrix of a tagger.
+Consider an error committed by a tagger: a word is predicted as tag T1 where it should be tagged as T2.
+In other words, tag T2 is confused with T1. Note that confusion is not symmetric.
+<p/>
+A confusion matrix tabulates all the mistakes committed by a tagger in the form of a matrix C[ti, tj].
+C[ti, tj] counts the number of times the tagger predicted ti instead of tj.  (Which NLTK data structure
+is appropriate for such a value?)
+<p/>
+Write a method ConfusionMatrix(corpus_test) that returns such a matrix for a tagger.
+<p/>
+Validate the ConfusionMatrix() method over the DefaultTagger discussed in class.
+<p/>
+Report the confusion matrix for the full tagset and simplified tagset of the Brown corpus for the last tagger
+discussed in class.  Discuss the results: which pairs of tags are the most difficult to distinguish?
+<p/>
+Given your observation on the most likely confusions, propose a simple (engineering) method to improve the results
+of your tagger.  Implement this improvement and report on error reduction.
+
+
+<a name="size"></a>
+<h4>Sensitivity to the Size and Structure of the Training Set: Cross-Validation</h4>
+
+The taggers we reviewed in class were trained on a data set then evaluated on a test set.
+We will now investigate how the results of the evaluation vary when we vary the size of the training set
+and the way we split our overall dataset between training and test sets.
+<p/>
+We saw above a plot that shows how the accuracy of a unigram tagger improves as the size of the training set increases.
+Assume we are given a manually tagged corpus of N words.  We want to train on a part and test on another. So we split
+the corpus in 2 parts.  How should we split the dataset so that the test training set is a good predictor of 
+actual performance on unseen data?
+<p/>
+The first method we will describe is called <i>cross-validation</i>: assume we decide to split our corpus in relative
+size of 90% training-10% testing. How can we be sure the split on which we test is representative?  The cross-validation
+process consists of splitting the data in 10 subsets of 10% each.  We iterate the process of training/testing 10 times,
+each time withholding one subset of 10% for testing and training on the other 9 subsets.  We then report the results
+of the accuracy as a table with rows: i (iteration number), accuracy(i) -- and summarize with the combined 
+accuracy averaged over the ten experiments.  (The same procedure can be performed for any number of splits N.)
+<p/>
+Implement a method crossValidate(corpus, n) for trainable taggers.  Report the 10-fold cross-validation results for 
+the last tagger discussed in class.  Discuss the results.
+
+<a name="stratified"></a>
+<h4>Stratified Samples</h4>
+
+When we perform cross-validation, we split the corpus randomly in N parts. An important issue to consider is whether
+the corpus contains sentences that are uniformly difficult. Assume there are P classes of sentences in the corpus,
+each class is more or less difficult to tag.  If we sample the test corpus out of the "easy" class, we will unfairly
+claim high accuracy results.  One way to avoid such bias is to construct <i>stratified</i> testing datasets.
+<p/>
+The procedure for constructing a stratified dataset consists of identifying P classes, then splitting each class separately.
+In this question, we will perform stratification over 2 dimensions:
+<ul>
+<li>Length of the sentence</li>
+<li>Genre of the sentence</li>
+</ul>
+The hypothesis we want to test is whether the length of a sentence (number of words) or its genre affect the results of the tagger.
+<p/>
+We first define three classes of sentence-lengths - short, medium and long.  To define what is the exact definition of these
+classes, plot the distribution of sentences by length in the overall Brown corpus (all categories). The plot should show
+how many sentences occur in the corpus for each observed sentence length.  Observe the plot and decide on cutoff values for 
+the classes "short", "medium" and "long".  Discuss how you made your decision.
+<p/>
+Write a method to construct a stratified dataset given the classes: stratifiedSamples(classes, N=10).
+The method should return 2 values: the training subset and the test subset, each stratified according to the classes.
+For example, if N=10, the stratified test subset should contain 10% of each of the classes and the stratified training
+subset should contain 90% of each of the classes.  As a consequence, both training and testing sets contain the same relative
+proportion of each class.
+<p/>
+Perform a cycle of training-testing on the Brown corpus for the last tagger discussed in class for each of the following cases:
+<ol>
+<li>Random split 90%-10%</li>
+<li>Stratified split 90%-10% according to sentence length (split short/medium/long)</li>
+<li>Stratified split 90%-10% according to the sentence genre.  The Brown corpus contains sentences in each of the following categories:
+    <ul>
+	<li>news</li>
+	<li>editorial</li>
+	<li>reviews</li>
+	<li>religion</li>
+	<li>hobbies</li>
+	<li>lore</li>
+	<li>belles_lettres</li>
+	<li>government</li>
+	<li>learned</li>
+	<li>fiction</li>
+	<li>mystery</li>
+	<li>science_fiction</li>
+	<li>adventure</li>
+	<li>romance</li>
+	<li>humor</li>
+	</ul>
+</ol>
+<p/>
+Discuss the results you observe.
+
+<BR> 
+<HR>
+        <I>Last modified Apr 20, 2012</I> 
+</BODY> 
+ 

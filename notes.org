@@ -1,0 +1,59 @@
+
+
+#+TITLE:     notes.org
+#+AUTHOR:    Aviad Reich
+#+EMAIL:     avi.rei@gmail.com
+#+DATE:      2012-04-15 Sun
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+
+* Parts of Speech Tagging <2012-04-15 Sun>
+
+** List of Parts of Speech 
+*** 19 Tags Simplified PTB
+
+| POS | Name         | Open/Closed | examples                                               |
+|-----+--------------+-------------+--------------------------------------------------------|
+| ADJ | Adjective    | Open        | big, white                                             |
+| ADV | Adverb       | Open        | fast, hastly                                           |
+| CNJ | Conjunction  | Closed      | and, or                                                |
+| DET | Determiner   | Closed      | a, the, this, that                                     |
+| EX  | Existential  | Closed      | there                                                  |
+| FW  | Foreign word | Open        | deja-vu, hutzpa                                        |
+| MOD | Modal        | Closed      | Epistemic: might, could, can.  [fn:1]                  |
+|     |              |             | Deontic: must, forbidden.                              |
+|     |              |             | Inference: therefore, must.                            |
+| N   | Noun         | Open        | table, cat, cow                                        |
+| NP  | Proper Noun  | Open        |                                                        |
+| NUM | Number       | Open        | 1, 2, one, two, third, 2.5, 22:30, Pi                  |
+| PRO | Pronoun      | Closed      | one /must do../, his,                                  |
+| P   | Preposition  | Closed      | in, /I went to school/ *in* /Be'er Sheva./             |
+| TO  | to           | Closed      | /I'm going/ *to* /Be'er Sheva/, /I'm going/ *to* /eat/ |
+| UH  | Intejection  | Closed      | haha, umm, ahh, ehh, mmm                               |
+| V   | Verb         | Open        | ran, hit, loved, cared                                 |
+|     | VD           | Open        | past verbs                                             |
+|     | VG           | Open        |                                                        |
+|     | VN           | Open        |                                                        |
+| WH  | WH-words     | Closed      | when, why, what, which, how,                           |
+
+** Difficulty
+To measure the difficulty of a task, we'll use:
++ Information Theory
++ Probability Theory
++ Decision Theory
+  
+
+* Footnotes
+
+[fn:1] Modes are: Assertion, Question, Imperative,
+  Subjective. Modalities are: Fact, Epistemic, Deontic, 

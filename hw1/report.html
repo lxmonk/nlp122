@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>NLP12 Assignment 1: Parts of Speech Tagging</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="title" content="NLP12 Assignment 1: Parts of Speech Tagging"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2012-03-19 Mon"/>
+<meta name="author" content="Aviad Reich, ID 052978509"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="nlp.css" media="all" />
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">NLP12 Assignment 1: Parts of Speech Tagging</h1>
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Data Exploration [1/2]</a>
+<ul>
+<li><a href="#sec-1-1">1.1 Gathering and cleaning up data</a></li>
+<li><a href="#sec-1-2">1.2 Manual Tagging:</a></li>
+<li><a href="#sec-1-3">1.3 Gathering basic statistics</a></li>
+<li><a href="#sec-1-4">1.4 Is there a correlation between word size or frequency and ambiguity level?</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2 Unigram and Affix Tagger [0/1]</a>
+<ul>
+<li><a href="#sec-2-1">2.1 ?? (delete this levele)</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3 Fine-grained Error Analysis [0/5]</a>
+<ul>
+<li><a href="#sec-3-1">3.1 Known vs. Unknown Accuracy</a></li>
+<li><a href="#sec-3-2">3.2 Per Tag Precision and Recall</a></li>
+<li><a href="#sec-3-3">3.3 Confusion Matrix</a></li>
+<li><a href="#sec-3-4">3.4 SensAitivity to the Size and Structure of the Training Set: Cross-Validation</a></li>
+<li><a href="#sec-3-5">3.5 Stratified Samples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<p>
+NOTES: In this assignment, the new "<a href="http://docs.python-requests.org/en/latest/index.html#">requests</a>" python library was used,
+and not <code>urllib</code>, as suggested in the tutorial. The web (and python)
+have evolved since python 2.5, used in the nltk book, was released
+in 2008. <br/>
+Additionally, since <code>xgoogle</code> seemed to return very few results (1-3 on
+most searches), I used <a href="http://breakingcode.wordpress.com/2010/06/29/google-search-python/">this script</a> instead.
+</p>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Data Exploration [1/2]</h2>
+<div class="outline-text-2" id="text-1">
+
+
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> <span class="done DONE"> DONE</span> Gathering and cleaning up data</h3>
+<div class="outline-text-3" id="text-1-1">
+
+<p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-04-30 Mon 22:44</span></span><br/>
+</p>
+<ol>
+<li><b>Errors met while dealing with the Google engine:</b> <br/>
+   Using the xgoogle library, only produced 1-3 result URLs for the
+   searches, so I tried several alternatives: the python-duckduckgo
+   library, but this only produced 1 result per query (duckduckgo only
+   supplies a 'zero-click' api). Eventually, I used <a href="http://breakingcode.wordpress.com/2010/06/29/google-search-python/">this script</a>, which
+   worked perfectly.
+
+</li>
+<li><b>Errors met while downloading the material from the Google hits:</b> <br/>
+   I had no trouble, and was using the "requests" library.
+
+</li>
+<li><b>Errors met while cleaning up the HTML pages:</b> <br/>
+   The built-in <code>nltk.clean_html</code> function did only a mediocre job
+   cleaning the contents of the web pages, leaving in some irrelevant
+   strings. Using the justext library worked perfectly.
+
+</li>
+<li><b>Errors met while segmenting the text into sentences and words:</b> <br/>
+   Headlines were not segmented in to different sentences, but were
+   instead included in the following sentence.
+   The em-dash (represented as "- -", without spaces) was not regarded as separating
+   between words when it should have been. For example, in: "sliding/N
+   movement- -the/DET days/N of/P heaving/VG" we can see the words
+   'movement' and 'the' <b>not</b> separated.
+
+</li>
+<li><b>Errors met by the automatic tagger:</b> <br/>
+   When fed sentences that were correctly segmented to to words, and
+   were also complete, and valid - I had no corrections to
+   offer. Perhaps it's my lack of competence as a tagger for English
+   words.. 
+</li>
+</ol>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> <span class="todo TODO"> TODO</span> Manual Tagging:</h3>
+<div class="outline-text-3" id="text-1-2">
+
+<p> Review the tagging of the new text separately (2 analyses) and
+ compare your tagging results. Report the list of words on which your
+ 2 manual tagging decisions are different (write a function to
+ compare two taggings of the same text saved in 2 different tagged
+ files.) Show the differences between each of your tags and the tags
+ produced by the automatic tagger. Report how long it took you to
+ check the tagging of 50 sentences.  
+</p>
+
+<p>
+This is the code I used:
+</p>
+
+
+<pre class="example">from cPickle import dump
+import justext
+import nltk
+import requests
+from google import search
+
+def main():
+    pages_used = 0
+    for url in search('aeron chair', stop=30):
+        text = ""
+        url_used = False
+        html = requests.get(url).content
+        paragraphs = justext.justext(html, justext.get_stoplist('English'))
+        for paragraph in paragraphs:
+            if paragraph['class'] == 'good':
+                if not url_used:
+                    url_used = True
+                    pages_used += 1
+                text += (paragraph['text'] + '\n')
+        if url_used:
+            print 'now analyzing text from: {}'.format(url)
+            rawfile = 'rawfile_{}.txt'.format(pages_used) 
+            with file(rawfile, 'wb') as f:
+                f.write(text)                              # save raw text to file
+
+            sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+            sents = sent_tokenizer.tokenize(text)
+            sentsfile = 'sentsfile_{}.pkl'.format(pages_used)
+            dump(sents, file(sentsfile, 'wb'), protocol=2) # pickle the sentences to a file
+
+            tokenized_sents = []
+            tokenized_sents += [nltk.word_tokenize(sent) for sent in sents]
+            tokfile = 'tokfile_{}.pkl'.format(pages_used)
+            dump(tokenized_sents, file(tokfile, 'wb'), protocol=2)  # pickle the tokenized_sents to a file
+
+            tagged_sents = [_tag(sent) for sent in tokenized_sents]
+            tagged_text = ""
+            for sent in tagged_sents:
+                tagged_text += ('\n\n\t' + # sentence seperator
+                                # create whitespace-separated 'word/tag' sentences
+                                ' '.join(['/'.join(word_tag_tuple) for word_tag_tuple in sent]) +
+                                '\n') # newline after sentence
+
+            corpfile = 'corpfile_{}.txt'.format(pages_used)
+            with file(corpfile, 'wb') as f:
+                f.write(tagged_text)
+
+    return 0
+
+def _tag(sent):
+    """
+    This is taken from http://goo.gl/TxTyq (short for
+    stackoverflow.com/...) with minor changes.
+    This function returns the inputed 'sent' as tagged by nltk.pos_tag
+    converted to Brown simplified tags.
+    """
+    from nltk.tag.simplify import simplify_brown_tag
+    tagged_sent = nltk.pos_tag(sent) 
+    simplified = [(word, simplify_brown_tag(tag)) for word, tag in tagged_sent]
+    return simplified
+
+if __name__ == '__main__':
+    main()
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1-3" class="outline-3">
+<h3 id="sec-1-3"><span class="section-number-3">1.3</span> Gathering basic statistics</h3>
+<div class="outline-text-3" id="text-1-3">
+
+<p>   To create Figure 1:
+</p>
+
+<div class="figure">
+<p><img src="ambiguity-fig1.png" width="800" alt="ambiguity-fig1.png" /></p>
+<p><b>Figure 1</b></p>
+</div>
+
+<p>   
+   I used the following code:
+</p>
+
+
+<pre class="example">from __future__ import division
+from collections import defaultdict, Counter
+import nltk
+import pylab
+
+def PlotNumberOfTags(corpus):
+    word_tag_dict = defaultdict(set)
+
+    for (word, tag) in corpus:
+        word_tag_dict[word].add(tag)
+
+    C = Counter(len(val) for val in word_tag_dict.itervalues())
+
+    pylab.subplot(211)
+    pylab.plot(C.keys(), C.values(), '-go', label='Linear Scale')
+    pylab.suptitle('Word Ambiguity:')
+    pylab.title('Number of Words by Possible Tag Number')
+    pylab.box('off')                 # for better appearance
+    pylab.grid('on')                 # for better appearance
+    pylab.ylabel('Words With This Number of Tags (Linear)')
+    pylab.legend(loc=0)
+
+    pylab.subplot(212)
+    pylab.plot(C.keys(), C.values(), '-bo', label='Logarithmic Scale')
+    pylab.yscale('log') # to make the graph more readable, for the log graph version
+    pylab.box('off')                 # for better appearance
+    pylab.grid('on')                 # for better appearance
+    pylab.xlabel('Number of Tags per Word')
+    pylab.ylabel('Words With This Number of Tags (Log)')
+    pylab.legend(loc=0)
+
+</pre>
+
+
+<p>   
+   For the requested functions, This code was used:
+</p>
+
+
+<pre class="example">def MostAmbiguousWords(corpus, N):
+    word_tag_dict = defaultdict(set)
+
+    for (word, tag) in corpus:
+        word_tag_dict[word].add(tag)
+
+    filtered_tagged_words = [(word, tag) for (word, tag) in corpus if len(word_tag_dict[word]) &gt; N]
+    return nltk.ConditionalFreqDist(filtered_tagged_words)
+
+def TestMostAmbiguousWords(cfd, N):
+    all_good = True
+    for word in cfd.conditions():
+        all_good &amp;= (len(cfd[word]) &gt; N)
+
+    if all_good:
+        print 'All words occur with more than {} tags.'.format(N)
+    else:
+        print 'ERROR: Some words occur with less (or exactly) {} tags'.format(N)
+
+def ShowExamples(word, cfd, corpus):
+    for tag in cfd[word].keys():
+        print '\'{}\' as {}: {}\n'.format(word, tag, example(word, tag, corpus))
+
+
+def example(word, tag, corpus):
+    idx = corpus.index((word, tag))
+    sent = corpus[idx-10:idx] + [(word.upper(), tag)] + corpus[idx+1:idx+11]
+    return ' '.join(word for (word, tag) in sent)
+
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1-4" class="outline-3">
+<h3 id="sec-1-4"><span class="section-number-3">1.4</span> Is there a correlation between word size or frequency and ambiguity level?</h3>
+<div class="outline-text-3" id="text-1-4">
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Unigram and Affix Tagger [0/1]</h2>
+<div class="outline-text-2" id="text-2">
+
+
+</div>
+
+<div id="outline-container-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> <span class="todo TODO"> TODO</span> ?? (delete this levele)</h3>
+<div class="outline-text-3" id="text-2-1">
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Fine-grained Error Analysis [0/5]</h2>
+<div class="outline-text-2" id="text-3">
+
+
+</div>
+
+<div id="outline-container-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> <span class="todo TODO"> TODO</span> Known vs. Unknown Accuracy</h3>
+<div class="outline-text-3" id="text-3-1">
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> <span class="todo TODO"> TODO</span> Per Tag Precision and Recall</h3>
+<div class="outline-text-3" id="text-3-2">
+
+</div>
+
+</div>
+
+<div id="outline-container-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> <span class="todo TODO"> TODO</span> Confusion Matrix</h3>
+<div class="outline-text-3" id="text-3-3">
+
+</div>
+
+</div>
+
+<div id="outline-container-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> <span class="todo TODO"> TODO</span> SensAitivity to the Size and Structure of the Training Set: Cross-Validation</h3>
+<div class="outline-text-3" id="text-3-4">
+
+</div>
+
+</div>
+
+<div id="outline-container-3-5" class="outline-3">
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> <span class="todo TODO"> TODO</span> Stratified Samples</h3>
+<div class="outline-text-3" id="text-3-5">
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2012-03-19 Mon</p>
+<p class="author">Author: Aviad Reich, ID 052978509</p>
+<p class="creator">Org version 7.8.03 with Emacs version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>notes.org</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="notes.org"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2012-04-15 Sun"/>
+<meta name="author" content="Aviad Reich"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">notes.org</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Parts of Speech Tagging</a>
+<ul>
+<li><a href="#sec-1-1">1.1 List of Parts of Speech</a>
+<ul>
+<li><a href="#sec-1-1-1">1.1.1 19 Tags Simplified PTB</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-2">1.2 Difficulty</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Parts of Speech Tagging <span class="timestamp-wrapper"> <span class="timestamp">2012-04-15 Sun</span></span></h2>
+<div class="outline-text-2" id="text-1">
+
+
+
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> List of Parts of Speech</h3>
+<div class="outline-text-3" id="text-1-1">
+
+
+</div>
+
+<div id="outline-container-1-1-1" class="outline-4">
+<h4 id="sec-1-1-1"><span class="section-number-4">1.1.1</span> 19 Tags Simplified PTB</h4>
+<div class="outline-text-4" id="text-1-1-1">
+
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<caption></caption>
+<colgroup><col class="left" /><col class="left" /><col class="left" /><col class="left" />
+</colgroup>
+<thead>
+<tr><th scope="col" class="left">POS</th><th scope="col" class="left">Name</th><th scope="col" class="left">Open/Closed</th><th scope="col" class="left">examples</th></tr>
+</thead>
+<tbody>
+<tr><td class="left">ADJ</td><td class="left">Adjective</td><td class="left">Open</td><td class="left">big, white</td></tr>
+<tr><td class="left">ADV</td><td class="left">Adverb</td><td class="left">Open</td><td class="left">fast, hastly</td></tr>
+<tr><td class="left">CNJ</td><td class="left">Conjunction</td><td class="left">Closed</td><td class="left">and, or</td></tr>
+<tr><td class="left">DET</td><td class="left">Determiner</td><td class="left">Closed</td><td class="left">a, the, this, that</td></tr>
+<tr><td class="left">EX</td><td class="left">Existential</td><td class="left">Closed</td><td class="left">there</td></tr>
+<tr><td class="left">FW</td><td class="left">Foreign word</td><td class="left">Open</td><td class="left">deja-vu, hutzpa</td></tr>
+<tr><td class="left">MOD</td><td class="left">Modal</td><td class="left">Closed</td><td class="left">Epistemic: might, could, can.  <sup><a class="footref" name="fnr.1" href="#fn.1">1</a></sup></td></tr>
+<tr><td class="left"></td><td class="left"></td><td class="left"></td><td class="left">Deontic: must, forbidden.</td></tr>
+<tr><td class="left"></td><td class="left"></td><td class="left"></td><td class="left">Inference: therefore, must.</td></tr>
+<tr><td class="left">N</td><td class="left">Noun</td><td class="left">Open</td><td class="left">table, cat, cow</td></tr>
+<tr><td class="left">NP</td><td class="left">Proper Noun</td><td class="left">Open</td><td class="left"></td></tr>
+<tr><td class="left">NUM</td><td class="left">Number</td><td class="left">Open</td><td class="left">1, 2, one, two, third, 2.5, 22:30, Pi</td></tr>
+<tr><td class="left">PRO</td><td class="left">Pronoun</td><td class="left">Closed</td><td class="left">one <i>must do..</i>, his,</td></tr>
+<tr><td class="left">P</td><td class="left">Preposition</td><td class="left">Closed</td><td class="left">in, <i>I went to school</i> in Be'er Sheva.</td></tr>
+<tr><td class="left">TO</td><td class="left">to</td><td class="left">Closed</td><td class="left"><i>I'm going</i> to <i>Be'er Sheva</i>, <i>I'm going</i> to <i>eat</i></td></tr>
+<tr><td class="left">UH</td><td class="left">Intejection</td><td class="left">Closed</td><td class="left">haha, umm, ahh, ehh, mmm</td></tr>
+<tr><td class="left">V</td><td class="left">Verb</td><td class="left">Open</td><td class="left">ran, hit, loved, cared</td></tr>
+<tr><td class="left"></td><td class="left">VD</td><td class="left">Open</td><td class="left">past verbs</td></tr>
+<tr><td class="left"></td><td class="left">VG</td><td class="left">Open</td><td class="left"></td></tr>
+<tr><td class="left"></td><td class="left">VN</td><td class="left">Open</td><td class="left"></td></tr>
+<tr><td class="left">WH</td><td class="left">WH-words</td><td class="left">Closed</td><td class="left">when, why, what, which, how,</td></tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> Difficulty</h3>
+<div class="outline-text-3" id="text-1-2">
+
+<p>To measure the difficulty of a task, we'll use:
+</p><ul>
+<li>Information Theory
+</li>
+<li>Probability Theory
+</li>
+<li>Decision Theory
+</li>
+</ul>
+
+
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+<p class="footnote"><sup><a class="footnum" name="fn.1" href="#fnr.1">1</a></sup> Modes are: Assertion, Question, Imperative,
+  Subjective. Modalities are: Fact, Epistemic, Deontic,
+</p>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2012-04-15 Sun</p>
+<p class="author">Author: Aviad Reich</p>
+<p class="creator">Org version 7.8.03 with Emacs version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>
