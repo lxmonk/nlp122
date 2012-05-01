@@ -109,9 +109,10 @@
 <li><a href="#sec-1-3">1.3 Is there a correlation between word size or frequency and ambiguity level?</a></li>
 </ul>
 </li>
-<li><a href="#sec-2">2 Unigram and Affix Tagger [0/1]</a>
+<li><a href="#sec-2">2 Unigram and Affix Tagger [0/2]</a>
 <ul>
-<li><a href="#sec-2-1">2.1 ?? (delete this levele)</a></li>
+<li><a href="#sec-2-1">2.1 Unigram Tagger</a></li>
+<li><a href="#sec-2-2">2.2 Affix Tagger</a></li>
 </ul>
 </li>
 <li><a href="#sec-3">3 Fine-grained Error Analysis [0/5]</a>
@@ -298,7 +299,7 @@ if __name__ == '__main__':
 
 <pre class="example">from __future__ import division
 from collections import defaultdict, Counter
-from itertools import combinations
+from numpy import log10
 import nltk
 import pylab
 
@@ -390,13 +391,13 @@ frequency (figure 3c):
 </p>
 <div class="figure">
 <p><img src="ambiguity2x2.png" width="950" alt="ambiguity2x2.png" /></p>
-<p><b>Figure 2b</b></p>
+<p><b>Figure 2b - linear projections</b></p>
 </div>
 
 
 <div class="figure">
 <p><img src="ambiguity2x2-log.png" width="950" alt="ambiguity2x2-log.png" /></p>
-<p><b>Figure 2c</b></p>
+<p><b>Figure 2c - logarithmic projections</b></p>
 </div>
 
 <p>
@@ -469,15 +470,24 @@ out, to create the different graphs):
 </div>
 
 <div id="outline-container-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> Unigram and Affix Tagger [0/1]</h2>
+<h2 id="sec-2"><span class="section-number-2">2</span> Unigram and Affix Tagger [0/2]</h2>
 <div class="outline-text-2" id="text-2">
 
 
 </div>
 
 <div id="outline-container-2-1" class="outline-3">
-<h3 id="sec-2-1"><span class="section-number-3">2.1</span> ?? (delete this levele)</h3>
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Unigram Tagger</h3>
 <div class="outline-text-3" id="text-2-1">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Affix Tagger</h3>
+<div class="outline-text-3" id="text-2-2">
 
 </div>
 </div>

@@ -93,11 +93,11 @@ This is the code I used:
 In order to better understand it, I also looked at the 3 2D
 Projections of it (figure 2b), and used a logarithmic scale for word
 frequency (figure 3c):
-#+CAPTION: *Figure 2b*
+#+CAPTION: *Figure 2b - linear projections*
 #+ATTR_HTML: width="950"
 [[file:ambiguity2x2.png]]
 
-#+CAPTION: *Figure 2c*
+#+CAPTION: *Figure 2c - logarithmic projections*
 #+ATTR_HTML: width="950"
 [[file:ambiguity2x2-log.png]]
 
