@@ -100,10 +100,13 @@
 <ul>
 <li><a href="#sec-1">1 Data Exploration [1/2]</a>
 <ul>
-<li><a href="#sec-1-1">1.1 Gathering and cleaning up data</a></li>
-<li><a href="#sec-1-2">1.2 Manual Tagging:</a></li>
-<li><a href="#sec-1-3">1.3 Gathering basic statistics</a></li>
-<li><a href="#sec-1-4">1.4 Is there a correlation between word size or frequency and ambiguity level?</a></li>
+<li><a href="#sec-1-1">1.1 Gathering and cleaning up data</a>
+<ul>
+<li><a href="#sec-1-1-1">1.1.1 Manual Tagging:</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-2">1.2 Gathering basic statistics</a></li>
+<li><a href="#sec-1-3">1.3 Is there a correlation between word size or frequency and ambiguity level?</a></li>
 </ul>
 </li>
 <li><a href="#sec-2">2 Unigram and Affix Tagger [0/1]</a>
@@ -142,7 +145,7 @@ most searches), I used <a href="http://breakingcode.wordpress.com/2010/06/29/goo
 </div>
 
 <div id="outline-container-1-1" class="outline-3">
-<h3 id="sec-1-1"><span class="section-number-3">1.1</span> <span class="done DONE"> DONE</span> Gathering and cleaning up data</h3>
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> Gathering and cleaning up data</h3>
 <div class="outline-text-3" id="text-1-1">
 
 <p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-04-30 Mon 22:44</span></span><br/>
@@ -184,13 +187,12 @@ most searches), I used <a href="http://breakingcode.wordpress.com/2010/06/29/goo
 </ol>
 
 
-</div>
 
 </div>
 
-<div id="outline-container-1-2" class="outline-3">
-<h3 id="sec-1-2"><span class="section-number-3">1.2</span> <span class="todo TODO"> TODO</span> Manual Tagging:</h3>
-<div class="outline-text-3" id="text-1-2">
+<div id="outline-container-1-1-1" class="outline-4">
+<h4 id="sec-1-1-1"><span class="section-number-4">1.1.1</span> Manual Tagging:</h4>
+<div class="outline-text-4" id="text-1-1-1">
 
 <p> Review the tagging of the new text separately (2 analyses) and
  compare your tagging results. Report the list of words on which your
@@ -273,12 +275,13 @@ if __name__ == '__main__':
 
 
 </div>
+</div>
 
 </div>
 
-<div id="outline-container-1-3" class="outline-3">
-<h3 id="sec-1-3"><span class="section-number-3">1.3</span> Gathering basic statistics</h3>
-<div class="outline-text-3" id="text-1-3">
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> Gathering basic statistics</h3>
+<div class="outline-text-3" id="text-1-2">
 
 <p>   To create Figure 1:
 </p>
@@ -295,6 +298,7 @@ if __name__ == '__main__':
 
 <pre class="example">from __future__ import division
 from collections import defaultdict, Counter
+from itertools import combinations
 import nltk
 import pylab
 
@@ -323,7 +327,6 @@ def PlotNumberOfTags(corpus):
     pylab.xlabel('Number of Tags per Word')
     pylab.ylabel('Words With This Number of Tags (Log)')
     pylab.legend(loc=0)
-
 </pre>
 
 
@@ -332,7 +335,8 @@ def PlotNumberOfTags(corpus):
 </p>
 
 
-<pre class="example">def MostAmbiguousWords(corpus, N):
+<pre class="example">
+def MostAmbiguousWords(corpus, N):
     word_tag_dict = defaultdict(set)
 
     for (word, tag) in corpus:
@@ -360,7 +364,6 @@ def example(word, tag, corpus):
     idx = corpus.index((word, tag))
     sent = corpus[idx-10:idx] + [(word.upper(), tag)] + corpus[idx+1:idx+11]
     return ' '.join(word for (word, tag) in sent)
-
 </pre>
 
 
@@ -368,9 +371,97 @@ def example(word, tag, corpus):
 
 </div>
 
-<div id="outline-container-1-4" class="outline-3">
-<h3 id="sec-1-4"><span class="section-number-3">1.4</span> Is there a correlation between word size or frequency and ambiguity level?</h3>
-<div class="outline-text-3" id="text-1-4">
+<div id="outline-container-1-3" class="outline-3">
+<h3 id="sec-1-3"><span class="section-number-3">1.3</span> Is there a correlation between word size or frequency and ambiguity level?</h3>
+<div class="outline-text-3" id="text-1-3">
+
+<p>   To try and answer this question, I plotted the requested 3D graph
+   (figure 2a):
+</p>
+<div class="figure">
+<p><img src="ambiguity1x2.png" width="950" alt="ambiguity1x2.png" /></p>
+<p><b>Figure 2a</b></p>
+</div>
+
+<p>
+In order to better understand it, I also looked at the 3 2D
+Projections of it (figure 2b), and used a logarithmic scale for word
+frequency (figure 3c):
+</p>
+<div class="figure">
+<p><img src="ambiguity2x2.png" width="950" alt="ambiguity2x2.png" /></p>
+<p><b>Figure 2b</b></p>
+</div>
+
+
+<div class="figure">
+<p><img src="ambiguity2x2-log.png" width="950" alt="ambiguity2x2-log.png" /></p>
+<p><b>Figure 2c</b></p>
+</div>
+
+<p>
+Two correlations are clearly visible: <b>word frequency - word length</b> (as
+discussed in class, due to "evolution" maybe), and <b>word ambiguity - word length</b> (probably not a strictly linear correlation).<br/>
+It looks probable, that there is also some correlation between <b>word ambiguity - word frequency</b>, however, it's difficult to decide whether
+this correlation will exist after taking into account the previous two
+correlation, since they appear to be much more significant.<br/>
+It is also worth noting that  all these observations were made with
+only looking at the graphs, and might be wrong when tested for
+statistical significance.
+</p>
+
+<p>
+This is the code used (with minor changes or commenting
+out, to create the different graphs):
+</p>
+
+
+<pre class="example">def correl_plot3D(corpus):
+    from mpl_toolkits.mplot3d import Axes3D
+
+    word_tag_dict = defaultdict(set)
+    for (word, tag) in corpus:
+        word_tag_dict[word].add(tag)
+
+    raw_wordlist = [word for (word, tag) in corpus]
+    wordset = set(raw_wordlist)
+    wordlist = list(wordset)
+    word_fd = nltk.FreqDist(raw_wordlist)
+
+    fig = pylab.figure(figsize=(15,15))
+    ax = fig.add_subplot(224, projection='3d') # 224
+    xs = [len(w) for w in wordlist]
+    ys = [word_fd[w] for w in wordlist]
+    zs = [len(word_tag_dict[w]) for w in wordlist]
+    ax.scatter(xs, ys, zs)
+    ax.set_xlabel('word length (charachters)')
+    ax.set_ylabel('word frequency')
+    ax.set_zlabel('word ambiguity')
+
+    pylab.subplot(221)
+    pylab.yscale('log')
+    pylab.ylim(ymin=1, ymax=100000)
+    pylab.scatter(xs, ys)
+    pylab.title('word length - word freq (log)')
+    pylab.xlabel('word length')
+    pylab.ylabel('word freq (log)')
+
+    pylab.subplot(222)
+    pylab.xscale('log')
+    pylab.xlim(xmin=1, xmax=100000)
+    pylab.scatter(ys, zs)
+    pylab.title('word freq (log) - word ambiguity')
+    pylab.xlabel('word freq (log)')
+    pylab.ylabel('word ambiguity')
+
+    pylab.subplot(223)
+    pylab.scatter(zs, xs)
+    pylab.title('word ambiguity - word length')
+    pylab.xlabel('word ambiguity')
+    pylab.ylabel('word length')
+
+    pylab.show()
+</pre>
 
 </div>
 </div>
@@ -385,7 +476,7 @@ def example(word, tag, corpus):
 </div>
 
 <div id="outline-container-2-1" class="outline-3">
-<h3 id="sec-2-1"><span class="section-number-3">2.1</span> <span class="todo TODO"> TODO</span> ?? (delete this levele)</h3>
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> ?? (delete this levele)</h3>
 <div class="outline-text-3" id="text-2-1">
 
 </div>
@@ -401,7 +492,7 @@ def example(word, tag, corpus):
 </div>
 
 <div id="outline-container-3-1" class="outline-3">
-<h3 id="sec-3-1"><span class="section-number-3">3.1</span> <span class="todo TODO"> TODO</span> Known vs. Unknown Accuracy</h3>
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Known vs. Unknown Accuracy</h3>
 <div class="outline-text-3" id="text-3-1">
 
 </div>
@@ -409,7 +500,7 @@ def example(word, tag, corpus):
 </div>
 
 <div id="outline-container-3-2" class="outline-3">
-<h3 id="sec-3-2"><span class="section-number-3">3.2</span> <span class="todo TODO"> TODO</span> Per Tag Precision and Recall</h3>
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Per Tag Precision and Recall</h3>
 <div class="outline-text-3" id="text-3-2">
 
 </div>
@@ -417,7 +508,7 @@ def example(word, tag, corpus):
 </div>
 
 <div id="outline-container-3-3" class="outline-3">
-<h3 id="sec-3-3"><span class="section-number-3">3.3</span> <span class="todo TODO"> TODO</span> Confusion Matrix</h3>
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> Confusion Matrix</h3>
 <div class="outline-text-3" id="text-3-3">
 
 </div>
@@ -425,7 +516,7 @@ def example(word, tag, corpus):
 </div>
 
 <div id="outline-container-3-4" class="outline-3">
-<h3 id="sec-3-4"><span class="section-number-3">3.4</span> <span class="todo TODO"> TODO</span> SensAitivity to the Size and Structure of the Training Set: Cross-Validation</h3>
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> SensAitivity to the Size and Structure of the Training Set: Cross-Validation</h3>
 <div class="outline-text-3" id="text-3-4">
 
 </div>
@@ -433,7 +524,7 @@ def example(word, tag, corpus):
 </div>
 
 <div id="outline-container-3-5" class="outline-3">
-<h3 id="sec-3-5"><span class="section-number-3">3.5</span> <span class="todo TODO"> TODO</span> Stratified Samples</h3>
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Stratified Samples</h3>
 <div class="outline-text-3" id="text-3-5">
 
 </div>

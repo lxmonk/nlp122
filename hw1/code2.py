@@ -1,5 +1,6 @@
 from __future__ import division
 from collections import defaultdict, Counter
+from numpy import log10
 import nltk
 import pylab
 
@@ -62,7 +63,6 @@ def example(word, tag, corpus):
 
 def correl_plot3D(corpus):
     from mpl_toolkits.mplot3d import Axes3D
-    import matplotlib.pyplot as plt
 
     word_tag_dict = defaultdict(set)
     for (word, tag) in corpus:
@@ -73,16 +73,39 @@ def correl_plot3D(corpus):
     wordlist = list(wordset)
     word_fd = nltk.FreqDist(raw_wordlist)
     
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter([len(w) for w in wordlist], [word_fd[w] for w in wordlist],
-               [len(word_tag_dict[w]) for w in wordlist])
+    fig = pylab.figure(figsize=(15,15))
+    ax = fig.add_subplot(224, projection='3d') # 224
+    xs = [len(w) for w in wordlist]
+    ys = [word_fd[w] for w in wordlist]
+    zs = [len(word_tag_dict[w]) for w in wordlist]
+    ax.scatter(xs, ys, zs)
     ax.set_xlabel('word length (charachters)')
     ax.set_ylabel('word frequency')
-    ax.yaxis.set_scale('log')
     ax.set_zlabel('word ambiguity')
 
-    plt.show()
+    pylab.subplot(221)
+    pylab.yscale('log')
+    pylab.ylim(ymin=1, ymax=100000)
+    pylab.scatter(xs, ys)
+    pylab.title('word length - word freq (log)')
+    pylab.xlabel('word length')
+    pylab.ylabel('word freq (log)')
+    
+    pylab.subplot(222)
+    pylab.xscale('log')
+    pylab.xlim(xmin=1, xmax=100000)
+    pylab.scatter(ys, zs)
+    pylab.title('word freq (log) - word ambiguity')
+    pylab.xlabel('word freq (log)')
+    pylab.ylabel('word ambiguity')
+    
+    pylab.subplot(223)
+    pylab.scatter(zs, xs)
+    pylab.title('word ambiguity - word length')
+    pylab.xlabel('word ambiguity')
+    pylab.ylabel('word length')
+    
+    pylab.show()
     
 
     

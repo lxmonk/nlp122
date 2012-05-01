@@ -6,7 +6,7 @@
 #+KEYWORDS:
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:1-3 \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
@@ -57,7 +57,7 @@ most searches), I used [[http://breakingcode.wordpress.com/2010/06/29/google-sea
    offer. Perhaps it's my lack of competence as a tagger for English
    words.. 
 
-** TODO Manual Tagging:
+*** TODO Manual Tagging:
  Review the tagging of the new text separately (2 analyses) and
  compare your tagging results. Report the list of words on which your
  2 manual tagging decisions are different (write a function to
@@ -84,8 +84,42 @@ This is the code I used:
 #+INCLUDE "code2.py" src python :lines "34-63"
 
 ** Is there a correlation between word size or frequency and ambiguity level?
-* Unigram and Affix Tagger [0/1]
-** TODO ?? (delete this levele)
+   To try and answer this question, I plotted the requested 3D graph
+   (figure 2a):
+#+CAPTION: *Figure 2a*
+#+ATTR_HTML: width="950"
+[[file:ambiguity1x2.png]]
+
+In order to better understand it, I also looked at the 3 2D
+Projections of it (figure 2b), and used a logarithmic scale for word
+frequency (figure 3c):
+#+CAPTION: *Figure 2b*
+#+ATTR_HTML: width="950"
+[[file:ambiguity2x2.png]]
+
+#+CAPTION: *Figure 2c*
+#+ATTR_HTML: width="950"
+[[file:ambiguity2x2-log.png]]
+
+Two correlations are clearly visible: *word frequency - word length* (as
+discussed in class, due to "evolution" maybe), and *word ambiguity -
+word length* (probably not a strictly linear correlation).\\
+It looks probable, that there is also some correlation between *word
+ambiguity - word frequency*, however, it's difficult to decide whether
+this correlation will exist after taking into account the previous two
+correlation, since they appear to be much more significant.\\
+It is also worth noting that  all these observations were made with
+only looking at the graphs, and might be wrong when tested for
+statistical significance.
+
+
+This is the code used (with minor changes or commenting
+out, to create the different graphs):
+#+INCLUDE "code2.py" src python :lines "64-109"
+* Unigram and Affix Tagger [0/2]
+** TODO Unigram Tagger
+
+** TODO Affix Tagger
 * Fine-grained Error Analysis [0/5]
 ** TODO Known vs. Unknown Accuracy
 ** TODO Per Tag Precision and Recall
