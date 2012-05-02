@@ -20,6 +20,9 @@ def PlotNumberOfTags(corpus):
     pylab.grid('on')                 # for better appearance
     pylab.ylabel('Words With This Number of Tags (Linear)')
     pylab.legend(loc=0)
+    # add value tags
+    for x,y in zip(C.keys(), C.values()):
+        pylab.annotate(str(y), (x,y + 0.5))
 
     pylab.subplot(212)
     pylab.plot(C.keys(), C.values(), '-bo', label='Logarithmic Scale')
@@ -29,7 +32,10 @@ def PlotNumberOfTags(corpus):
     pylab.xlabel('Number of Tags per Word')
     pylab.ylabel('Words With This Number of Tags (Log)')
     pylab.legend(loc=0)
-    
+    # add value tags
+    for x,y in zip(C.keys(), C.values()):
+        pylab.annotate(str(y), (x,y + 0.5))
+        
     pylab.show()
 
 

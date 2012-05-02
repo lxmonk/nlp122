@@ -82,7 +82,7 @@ This is the code I used:
    [[file:ambiguity-fig1.png]]
    
    I used the following code:
-#+INCLUDE "code2.py" src python :lines "1-35"
+#+INCLUDE "code2.py" src python :lines "1-39"
    
    For the requested functions, This code was used:
 #+INCLUDE "code2.py" src python :lines "34-68"

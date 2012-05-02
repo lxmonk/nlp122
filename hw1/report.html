@@ -324,6 +324,9 @@ def PlotNumberOfTags(corpus):
     pylab.grid('on')                 # for better appearance
     pylab.ylabel('Words With This Number of Tags (Linear)')
     pylab.legend(loc=0)
+    # add value tags
+    for x,y in zip(C.keys(), C.values()):
+        pylab.annotate(str(y), (x,y + 0.5))
 
     pylab.subplot(212)
     pylab.plot(C.keys(), C.values(), '-bo', label='Logarithmic Scale')
@@ -333,8 +336,9 @@ def PlotNumberOfTags(corpus):
     pylab.xlabel('Number of Tags per Word')
     pylab.ylabel('Words With This Number of Tags (Log)')
     pylab.legend(loc=0)
-
-    pylab.show()
+    # add value tags
+    for x,y in zip(C.keys(), C.values()):
+        pylab.annotate(str(y), (x,y + 0.5))
 
 </pre>
 
@@ -344,7 +348,13 @@ def PlotNumberOfTags(corpus):
 </p>
 
 
-<pre class="example">
+<pre class="example">    pylab.legend(loc=0)
+    # add value tags
+    for x,y in zip(C.keys(), C.values()):
+        pylab.annotate(str(y), (x,y + 0.5))
+
+    pylab.show()
+
 
 
 
@@ -370,12 +380,6 @@ def TestMostAmbiguousWords(cfd, N):
 def ShowExamples(word, cfd, corpus):
     for tag in cfd[word].keys():
         print '\'{}\' as {}: {}\n'.format(word, tag, example(word, tag, corpus))
-
-
-def example(word, tag, corpus):
-    idx = corpus.index((word, tag))
-    sent = corpus[idx-10:idx] + [(word.upper(), tag)] + corpus[idx+1:idx+11]
-    return ' '.join(word for (word, tag) in sent)
 
 
 </pre>
@@ -432,6 +436,12 @@ out, to create the different graphs):
 
 <pre class="example">
 
+def example(word, tag, corpus):
+    idx = corpus.index((word, tag))
+    sent = corpus[idx-10:idx] + [(word.upper(), tag)] + corpus[idx+1:idx+11]
+    return ' '.join(word for (word, tag) in sent)
+
+
 
 
 def correl_plot3D(corpus):
@@ -474,12 +484,6 @@ def correl_plot3D(corpus):
 
     pylab.subplot(223)
     pylab.scatter(zs, xs)
-    pylab.title('word ambiguity - word length')
-    pylab.xlabel('word ambiguity')
-    pylab.ylabel('word length')
-
-    pylab.show()
-
 </pre>
 
 </div>
@@ -502,23 +506,25 @@ def correl_plot3D(corpus):
 </p>
 
 
-<pre class="example">from nltk.tag.api import TaggerI
+<pre class="example">    pylab.ylabel('word length')
+
+    pylab.show()
+
+
+
+from nltk.tag.api import TaggerI
 import nltk
 
 class MyUnigramTagger(TaggerI):
     def __init__(self, train=None, model=None,
                  backoff=None, cutoff=0, verbose=False):
         if type(train[0]) == tuple:
-            self.cfd = nltk.ConditionalFreqDist(train)
-            self.default_tag = nltk.FreqDist(tag for (word, tag) in train).max()
-            self.wordset = set(word for (word, tag) in train)
-
+            pass
         elif type(train[0][0]) == tuple:
-            flattened_train = flatten(train)
-            self.cfd = nltk.ConditionalFreqDist(flattened_train)
-            self.default_tag = nltk.FreqDist(tag for (word, tag) in flattened_train).max()
-            self.wordset = set(word for (word, tag) in flattened_train)
-
+            train = flatten(train)            
+        self.cfd = nltk.ConditionalFreqDist(train)
+        self.default_tag = nltk.FreqDist(tag for (word, tag) in train).max()
+        self.wordset = set(word for (word, tag) in train)
 
     def tag(self, tokens):
         # docs inherited from TaggerI
@@ -530,8 +536,6 @@ class MyUnigramTagger(TaggerI):
 # This really should have come with either itertools or standard lib..
 from itertools import chain
 def flatten(listOfLists):
-    "Flatten one level of nesting"
-    return chain.from_iterable(listOfLists)
 </pre>
 
 </div>
