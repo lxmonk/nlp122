@@ -1,5 +1,6 @@
 from __future__ import division
 from collections import defaultdict, Counter
+from numpy import log
 import nltk
 import pylab
 
@@ -148,7 +149,127 @@ def flatten(listOfLists):
     "Flatten one level of nesting"
     return chain.from_iterable(listOfLists)
     
+    
+from nltk.tag import AffixTagger
+
+H_PARAM = 0
+
+class MyAffixTagger(AffixTagger):
+    def __init__(self, train=None, model=None, affix_length=-3,
+                 min_stem_length=2, backoff=None, cutoff=0, verbose=False,
+                 H_param=0):
+        self.H_param = H_param
+        AffixTagger.__init__(self, train, model, affix_length,
+                             min_stem_length, backoff, cutoff, verbose)
+
+        # All this trouble for *this* line:
+        
+    def _train(self, tagged_corpus, cutoff=0, verbose=False):
+        """
+        Initialize this ContextTagger's ``_context_to_tag`` table
+        based on the given training data.  In particular, for each
+        context ``c`` in the training data, set
+        ``_context_to_tag[c]`` to the most frequent tag for that
+        context.  However, exclude any contexts that are already
+        tagged perfectly by the backoff tagger(s).
+
+        The old value of ``self._context_to_tag`` (if any) is discarded.
+
+        :param tagged_corpus: A tagged corpus.  Each item should be
+            a list of (word, tag tuples.
+        :param cutoff: If the most likely tag for a context occurs
+            fewer than cutoff times, then exclude it from the
+            context-to-tag table for the new tagger.
+        """
+
+        token_count = hit_count = 0
+
+        # A context is considered 'useful' if it's not already tagged
+        # perfectly by the backoff tagger.
+        useful_contexts = set()
+
+        # Count how many times each tag occurs in each context.
+        fd = nltk.ConditionalFreqDist()
+        for sentence in tagged_corpus:
+            tokens, tags = zip(*sentence)
+            for index, (token, tag) in enumerate(sentence):
+                # Record the event.
+                token_count += 1
+                context = self.context(tokens, index, tags[:index])
+                if context is None: continue
+                fd[context].inc(tag)
+                # If the backoff got it wrong, this context is useful:
+                if (self.backoff is None or
+                    tag != self.backoff.tag_one(tokens, index, tags[:index])):
+                    useful_contexts.add(context)
+
+        # Build the context_to_tag table -- for each context, figure
+        # out what the most likely tag is.  Only include contexts that
+        # we've seen at least `cutoff` times.
+        ### best_preds = []
+        for context in useful_contexts:
+            best_tag = fd[context].max()
+            hits = fd[context][best_tag]
+            if hits > cutoff and self.H(fd[context]) > self.H_param:
+                self._context_to_tag[context] = best_tag
+                hit_count += hits
+                
+           ###      prediction = fd[context][best_tag] / fd[context].N()
+        ###         if prediction > 0.8:
+        ###             best_preds.append((prediction, context))
+        ### for prediction, context in sorted(best_preds, reverse=True):
+        ###     print '{:3} gives {:.3f} percent prediction as {}'.format(context,
+        ###                                                               prediction * 100,
+        ###                                                               fd[context].max())
+            
+    def H(self, p):
+        # we already used 'from __future__ import division''
+        N = p.N()               # total num of items seen by the fd
+        sum = 0
+        for k,v in p.iteritems():
+            Px = v / N          # future division
+            logPx = log(Px)
+            PxXlogPx = 0 if Px == 0 else Px * logPx 
+            sum -= PxXlogPx
+        return sum
+
+
+        
+    def optimize_parameter(self):
+        corpus = nltk.corpus.brown.tagged_sents(simplify_tags=True)
+        corpus_len = len(corpus)
+        trainset = corpus[:int(corpus_len * 8 / 10)] # this is ok, it's an int
+        develset = corpus[int(corpus_len * 8 / 10):int(corpus_len * 9 / 10)]
+        testset =  corpus[int(corpus_len * 9 / 10):]
+        options = []            # list of (accuracy, param_val, context_to_tag_table) tuples
+        for cutoff_candidate in range(1,5) + range(5,10,2) + range(10,51,10):
+            print 'optimizing cutoff parameter: trying {:2}'.format(cutoff_candidate),
+            self._context_to_tag.clear() # clear context_to_tag table
+            self._train(trainset, cutoff=cutoff_candidate)
+            score = self.evaluate(develset)
+            print ' ---> it scored {:.5f}'.format(score)
+            options.append((score, cutoff_candidate, self._context_to_tag))
+            
+        _, choosen_cutoff, self._context_to_tag = max(options)
+        print ('choosen cutoff value is {}, which scores {} on the '
+               'testset.'.format(choosen_cutoff,
+                                 self.evaluate(testset)))
+                                 
+from numpy import linspace
+
+def optimize_H_param():
+    corp = nltk.corpus.brown.tagged_sents(simplify_tags=True)
+    for h in linspace(0,1,10)[:-1]: # remove the 1.0
+        print
+        print 'optimize_h_param: H_param={:f}'.format(h)
+        affix = MyAffixTagger(corp, H_param=h)
+        affix.optimize_parameter()
+
+
 if __name__ == '__main__':
     pass
 
     
+
+
+

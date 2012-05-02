@@ -125,8 +125,260 @@ out, to create the different graphs):
    This is the code for the Unigram Tagger:
 #+INCLUDE "code2.py" src python :lines "118-148"
 ** TODO Affix Tagger
+This is the code used:
+#+INCLUDE "code2.py" src python :lines "153-253"
+To produce this output (=H_param= was 0):
+
+#+BEGIN_EXAMPLE
+optimizing cutoff parameter: trying 1   ---> it scored 0.19049
+optimizing cutoff parameter: trying 2   ---> it scored 0.19033
+optimizing cutoff parameter: trying 3   ---> it scored 0.19027
+optimizing cutoff parameter: trying 4   ---> it scored 0.19005
+optimizing cutoff parameter: trying 5   ---> it scored 0.18988
+optimizing cutoff parameter: trying 6   ---> it scored 0.18979
+optimizing cutoff parameter: trying 7   ---> it scored 0.18963
+optimizing cutoff parameter: trying 8   ---> it scored 0.18938
+optimizing cutoff parameter: trying 9   ---> it scored 0.18921
+optimizing cutoff parameter: trying 10  ---> it scored 0.18917
+optimizing cutoff parameter: trying 15  ---> it scored 0.18848
+optimizing cutoff parameter: trying 20  ---> it scored 0.18722
+optimizing cutoff parameter: trying 25  ---> it scored 0.18611
+optimizing cutoff parameter: trying 30  ---> it scored 0.18518
+optimizing cutoff parameter: trying 35  ---> it scored 0.18367
+optimizing cutoff parameter: trying 40  ---> it scored 0.18211
+optimizing cutoff parameter: trying 45  ---> it scored 0.18129
+
+choosen cutoff value is 1, which scores 0.182246809581 on the testset.
+#+END_EXAMPLE
+
+Later, I added this function to optimize the =H_param= AND the cutoff
+value:
+#+INCLUDE "code2.py" src python :lines "258-266"
+
+This produced these values:
+#+BEGIN_EXAMPLE
+optimize_h_param: H_param=0.000000
+optimizing cutoff parameter: trying  1  ---> it scored 0.19049
+optimizing cutoff parameter: trying  2  ---> it scored 0.19033
+optimizing cutoff parameter: trying  3  ---> it scored 0.19027
+optimizing cutoff parameter: trying  4  ---> it scored 0.19005
+optimizing cutoff parameter: trying  5  ---> it scored 0.18988
+optimizing cutoff parameter: trying  7  ---> it scored 0.18963
+optimizing cutoff parameter: trying  9  ---> it scored 0.18921
+optimizing cutoff parameter: trying 10  ---> it scored 0.18917
+optimizing cutoff parameter: trying 20  ---> it scored 0.18722
+optimizing cutoff parameter: trying 30  ---> it scored 0.18518
+optimizing cutoff parameter: trying 40  ---> it scored 0.18211
+optimizing cutoff parameter: trying 50  ---> it scored 0.18028
+choosen cutoff value is 1, which scores 0.181345738773 on the testset.
+
+optimize_h_param: H_param=0.111111
+optimizing cutoff parameter: trying  1  ---> it scored 0.17432
+optimizing cutoff parameter: trying  2  ---> it scored 0.17416
+optimizing cutoff parameter: trying  3  ---> it scored 0.17410
+optimizing cutoff parameter: trying  4  ---> it scored 0.17388
+optimizing cutoff parameter: trying  5  ---> it scored 0.17371
+optimizing cutoff parameter: trying  7  ---> it scored 0.17346
+optimizing cutoff parameter: trying  9  ---> it scored 0.17305
+optimizing cutoff parameter: trying 10  ---> it scored 0.17300
+optimizing cutoff parameter: trying 20  ---> it scored 0.17105
+optimizing cutoff parameter: trying 30  ---> it scored 0.16902
+optimizing cutoff parameter: trying 40  ---> it scored 0.16594
+optimizing cutoff parameter: trying 50  ---> it scored 0.16419
+choosen cutoff value is 1, which scores 0.164895957754 on the testset.
+
+optimize_h_param: H_param=0.222222
+optimizing cutoff parameter: trying  1  ---> it scored 0.16144
+optimizing cutoff parameter: trying  2  ---> it scored 0.16128
+optimizing cutoff parameter: trying  3  ---> it scored 0.16122
+optimizing cutoff parameter: trying  4  ---> it scored 0.16100
+optimizing cutoff parameter: trying  5  ---> it scored 0.16083
+optimizing cutoff parameter: trying  7  ---> it scored 0.16058
+optimizing cutoff parameter: trying  9  ---> it scored 0.16017
+optimizing cutoff parameter: trying 10  ---> it scored 0.16012
+optimizing cutoff parameter: trying 20  ---> it scored 0.15824
+optimizing cutoff parameter: trying 30  ---> it scored 0.15626
+optimizing cutoff parameter: trying 40  ---> it scored 0.15324
+optimizing cutoff parameter: trying 50  ---> it scored 0.15193
+choosen cutoff value is 1, which scores 0.151463716184 on the testset.
+
+optimize_h_param: H_param=0.333333
+optimizing cutoff parameter: trying  1  ---> it scored 0.14877
+optimizing cutoff parameter: trying  2  ---> it scored 0.14861
+optimizing cutoff parameter: trying  3  ---> it scored 0.14855
+optimizing cutoff parameter: trying  4  ---> it scored 0.14833
+optimizing cutoff parameter: trying  5  ---> it scored 0.14816
+optimizing cutoff parameter: trying  7  ---> it scored 0.14791
+optimizing cutoff parameter: trying  9  ---> it scored 0.14755
+optimizing cutoff parameter: trying 10  ---> it scored 0.14752
+optimizing cutoff parameter: trying 20  ---> it scored 0.14600
+optimizing cutoff parameter: trying 30  ---> it scored 0.14449
+optimizing cutoff parameter: trying 40  ---> it scored 0.14162
+optimizing cutoff parameter: trying 50  ---> it scored 0.14032
+choosen cutoff value is 1, which scores 0.138670606232 on the testset.
+
+optimize_h_param: H_param=0.444444
+optimizing cutoff parameter: trying  1  ---> it scored 0.13839
+optimizing cutoff parameter: trying  2  ---> it scored 0.13823
+optimizing cutoff parameter: trying  3  ---> it scored 0.13817
+optimizing cutoff parameter: trying  4  ---> it scored 0.13795
+optimizing cutoff parameter: trying  5  ---> it scored 0.13778
+optimizing cutoff parameter: trying  7  ---> it scored 0.13757
+optimizing cutoff parameter: trying  9  ---> it scored 0.13737
+optimizing cutoff parameter: trying 10  ---> it scored 0.13733
+optimizing cutoff parameter: trying 20  ---> it scored 0.13592
+optimizing cutoff parameter: trying 30  ---> it scored 0.13453
+optimizing cutoff parameter: trying 40  ---> it scored 0.13247
+optimizing cutoff parameter: trying 50  ---> it scored 0.13129
+choosen cutoff value is 1, which scores 0.129722763563 on the testset.
+
+optimize_h_param: H_param=0.555556
+optimizing cutoff parameter: trying  1  ---> it scored 0.12325
+optimizing cutoff parameter: trying  2  ---> it scored 0.12308
+optimizing cutoff parameter: trying  3  ---> it scored 0.12303
+optimizing cutoff parameter: trying  4  ---> it scored 0.12292
+optimizing cutoff parameter: trying  5  ---> it scored 0.12280
+optimizing cutoff parameter: trying  7  ---> it scored 0.12260
+optimizing cutoff parameter: trying  9  ---> it scored 0.12240
+optimizing cutoff parameter: trying 10  ---> it scored 0.12236
+optimizing cutoff parameter: trying 20  ---> it scored 0.12110
+optimizing cutoff parameter: trying 30  ---> it scored 0.11981
+optimizing cutoff parameter: trying 40  ---> it scored 0.11816
+optimizing cutoff parameter: trying 50  ---> it scored 0.11714
+choosen cutoff value is 1, which scores 0.114760797133 on the testset.
+
+optimize_h_param: H_param=0.666667
+optimizing cutoff parameter: trying  1  ---> it scored 0.10689
+optimizing cutoff parameter: trying  2  ---> it scored 0.10685
+optimizing cutoff parameter: trying  3  ---> it scored 0.10684
+optimizing cutoff parameter: trying  4  ---> it scored 0.10678
+optimizing cutoff parameter: trying  5  ---> it scored 0.10667
+optimizing cutoff parameter: trying  7  ---> it scored 0.10648
+optimizing cutoff parameter: trying  9  ---> it scored 0.10636
+optimizing cutoff parameter: trying 10  ---> it scored 0.10634
+optimizing cutoff parameter: trying 20  ---> it scored 0.10531
+optimizing cutoff parameter: trying 30  ---> it scored 0.10454
+optimizing cutoff parameter: trying 40  ---> it scored 0.10313
+optimizing cutoff parameter: trying 50  ---> it scored 0.10246
+choosen cutoff value is 1, which scores 0.100417007188 on the testset.
+
+optimize_h_param: H_param=0.777778
+optimizing cutoff parameter: trying  1  ---> it scored 0.08989
+optimizing cutoff parameter: trying  2  ---> it scored 0.08989
+optimizing cutoff parameter: trying  3  ---> it scored 0.08989
+optimizing cutoff parameter: trying  4  ---> it scored 0.08984
+optimizing cutoff parameter: trying  5  ---> it scored 0.08974
+optimizing cutoff parameter: trying  7  ---> it scored 0.08958
+optimizing cutoff parameter: trying  9  ---> it scored 0.08950
+optimizing cutoff parameter: trying 10  ---> it scored 0.08947
+optimizing cutoff parameter: trying 20  ---> it scored 0.08878
+optimizing cutoff parameter: trying 30  ---> it scored 0.08831
+optimizing cutoff parameter: trying 40  ---> it scored 0.08693
+optimizing cutoff parameter: trying 50  ---> it scored 0.08648
+choosen cutoff value is 3, which scores 0.08349573563 on the testset.
+
+optimize_h_param: H_param=0.888889
+optimizing cutoff parameter: trying  1  ---> it scored 0.06796
+optimizing cutoff parameter: trying  2  ---> it scored 0.06796
+optimizing cutoff parameter: trying  3  ---> it scored 0.06796
+optimizing cutoff parameter: trying  4  ---> it scored 0.06794
+optimizing cutoff parameter: trying  5  ---> it scored 0.06786
+optimizing cutoff parameter: trying  7  ---> it scored 0.06770
+optimizing cutoff parameter: trying  9  ---> it scored 0.06762
+optimizing cutoff parameter: trying 10  ---> it scored 0.06759
+optimizing cutoff parameter: trying 20  ---> it scored 0.06704
+optimizing cutoff parameter: trying 30  ---> it scored 0.06663
+optimizing cutoff parameter: trying 40  ---> it scored 0.06548
+optimizing cutoff parameter: trying 50  ---> it scored 0.06522
+choosen cutoff value is 3, which scores 0.0618281259823 on the testset.
+
+#+END_EXAMPLE
+We can clearly see that cutting off according to ANY criteria, causes
+a degradation in the tagger's performance, except for the case when
+=H_param= was high ($\frac{7}{9}$, $\frac{8}{9}$), where cutoff values
+of 1-3 are equally good.
+
+
+1) *Does entropy filtering improve accuracy?*
+   It does not (!!)
+
+2) *How do you determine the range of values to test for the cutoff?*
+   I used the values 1-5, 7,9, 10, 20, 30, 40, 50. This was not taken
+   from the corpus, but seemed to give more than reasonable cover for
+   several corpora.
+  
+3) *Is the accuracy value evolving in a predictable manner as the cutoff varies?*
+   It decreases as the cutoff increases.
+
+4) *Describe the list of suffixes that are good tag predictors -- are
+   you surprised by what you observe?*
+
+
+#+BEGIN_EXAMPLE
+eir gives 99.963 percent prediction as PRO
+uld gives 99.942 percent prediction as MOD
+ods gives 99.735 percent prediction as N
+rld gives 99.624 percent prediction as N
+iam gives 99.444 percent prediction as NP
+ths gives 99.413 percent prediction as N
+tel gives 99.379 percent prediction as N
+ups gives 99.363 percent prediction as N
+ror gives 99.306 percent prediction as N
+cil gives 99.296 percent prediction as N
+'re gives 99.288 percent prediction as PRO
+rgy gives 99.180 percent prediction as N
+hip gives 99.135 percent prediction as N
+tem gives 99.057 percent prediction as N
+ege gives 98.997 percent prediction as N
+tee gives 98.985 percent prediction as N
+umn gives 98.936 percent prediction as N
+try gives 98.825 percent prediction as N
+ogy gives 98.805 percent prediction as N
+hor gives 98.780 percent prediction as N
+ity gives 98.778 percent prediction as N
+dex gives 98.765 percent prediction as N
+arp gives 98.649 percent prediction as ADJ
+hod gives 98.611 percent prediction as N
+yne gives 98.485 percent prediction as NP
+not gives 98.473 percent prediction as MOD
+nst gives 98.425 percent prediction as P
+ons gives 98.391 percent prediction as N
+oms gives 98.378 percent prediction as N
+elf gives 98.328 percent prediction as PRO
+ife gives 98.230 percent prediction as N
+bol gives 98.214 percent prediction as N
+gth gives 98.127 percent prediction as N
+dar gives 98.077 percent prediction as N
+lue gives 98.058 percent prediction as N
+wly gives 98.000 percent prediction as ADV
+sis gives 97.950 percent prediction as N
+hts gives 97.947 percent prediction as N
+rey gives 97.917 percent prediction as NP
+ski gives 97.778 percent prediction as NP
+ffs gives 97.778 percent prediction as N
+ols gives 97.612 percent prediction as N
+ool gives 97.543 percent prediction as N
+#+END_EXAMPLE
+
+I can see why some of these would be good predictors, especially for
+the Nouns I (think I) recognize, such as "ool", "ols", "ogy", and why "'re",
+but for most of them - I can't really imagine why they are so good.
+I have to admit that I don't recognize any of these as a suffix I
+studies in linguistics.
+
 * Fine-grained Error Analysis [0/5]
 ** TODO Known vs. Unknown Accuracy
+   I propose to identify known words as words that appeared more than
+   $N$ times in the training corpus, where $N>0$ (I'll use $N=1$, but that's just
+   one option).
+
+   I suggest adding the code (for $N=1$): \\
+   ~self.wordset = set(word for (word, tag) in sentence in train)~
+   
+   To every tagger. This could be used in the =evaluate2= method, in
+   the following manner:
+#+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "70-88"
+
 ** TODO Per Tag Precision and Recall
 ** TODO Confusion Matrix
 ** TODO SensAitivity to the Size and Structure of the Training Set: Cross-Validation
