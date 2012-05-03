@@ -22,7 +22,7 @@ and not =urllib=, as suggested in the tutorial. The web (and python)
 have evolved since python 2.5, used in the nltk book, was released
 in 2008. \\
 Additionally, since =xgoogle= seemed to return very few results (1-3 on
-most searches), I used [[http://breakingcode.wordpress.com/2010/06/29/google-search-python/][this script]] instead.
+most searches), I used [[http://breakingcode.wordpress.com/2010/06/29/google-search-python/][this script]] inst
 
 * Data Exploration [1/2]
 ** DONE Gathering and cleaning up data
@@ -361,7 +361,7 @@ but for most of them - I can't really imagine why they are so good.
 I have to admit that I don't recognize any of these as a suffix I
 studies in linguistics.
 
-* Fine-grained Error Analysis [2/5]
+* Fine-grained Error Analysis [3/5]
 ** DONE Known vs. Unknown Accuracy
    CLOSED: [2012-05-03 Thu 01:29]
 
@@ -384,13 +384,74 @@ studies in linguistics.
 
 
 ** TODO Confusion Matrix
-   The  
-** TODO SensAitivity to the Size and Structure of the Training Set: Cross-Validation
+   The data structure for this is the ConditionalFreqDist. \\
+   The code (in =api.py=):
+#+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "129-146"
+   Results for brown corpus (simplified tags):
+#+BEGIN_EXAMPLE
+
+#+END_EXAMPLE
+
+** DONE Sensitivity to the Size and Structure of the Training Set: Cross-Validation
+   CLOSED: [2012-05-03 Thu 22:42]
+   The code for the function:
+#+INCLUDE "code2.py" src python :lines "153-169"
+   Produced:
+#+BEGIN_EXAMPLE
+In [12] t0 = nltk.DefaultTagger('NN')
+In [13] t1 = nltk.UnigramTagger(nltk.corpus.treebank.tagged_sents(simplify_tags=True), backoff=t0)
+In [14] t2 = nltk.BigramTagger(nltk.corpus.treebank.tagged_sents(simplify_tags=True), backoff=t1)
+In [15] table = t2.crossValidate(nltk.corpus.brown.tagged_sents(simplify_tags=True), 10)
+
+ i  accuracy(i)
+ --------------
+ 0)   0.135158702476
+ 1)   0.483606557377
+ 2)   0.486920125567
+ 3)   0.472096267876
+ 4)   0.460062783397
+ 5)   0.482211370771
+ 6)   0.514475061039
+ 7)   0.571154516917
+ 8)   0.56853854203
+ 9)   0.55284269271
+
+In [16]: average(table.values())
+Out[16]: 0.47270666201604455
+#+END_EXAMPLE
+   We can see that the accuracy of the 0^{th} iteration is very low in
+   comparison to the others. Ignoring it produces:
+#+BEGIN_EXAMPLE
+In [18]: average([table[i] for i in range(1,10)])
+Out[18]: 0.51021199085377655
+#+END_EXAMPLE
+   Which is not very different. This, however, shows the importance of
+   covering as much of the training set as possible, since there might
+   be significant variations.
+      
+
 ** TODO Stratified Samples
+   To define sentence lengths, I used:
+#+BEGIN_SRC python
+fd = nltk.FreqDist([len(sent) for sent in nltk.corpus.brown.tagged_sents()])
+hist(list(chain.from_iterable([[k]*fd[k] for k in fd.keys()])),
+     bins=(max(fd.keys()) - min(fd.keys()) + 1))
+#+END_SRC
 
+   The histogram is this:
+#+ATTR_HTML: width="950"
+[[file:hist_3.5.png]]
 
+   I choose the lengths of $short \leq 12$ (short, after first peak), 
+   $12 < medium \leq 23$ (medium), and $23 < long$ (long).
+   Looking at the numbers, we see it's the integer equivalent of
+   dividing to 3 equal groups:
+   
+\begin{equation}
+\sum_{i=0}^{\infty} fd[i] = 57340,\: \sum_{i=0}^{12} fd[i] = 18167 \approx
+\frac{1}{3} \cdot 57340,\: \sum_{i=0}^{23} fd[i] = 38322 \approx \frac{2}{3}
+\cdot 57340
 
-
-
+\end{equation}
 
 

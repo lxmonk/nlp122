@@ -275,6 +275,14 @@ def compare_taggers(tagger1, tagger2, testset):
             print 'second tagger: {}'.format(' '.join(['/'.join(word_tag_tuple)
                                                       for word_tag_tuple in tagged_by_2[i]]))
 
+def conf(corpus, tabulate=False):
+    t0 = nltk.DefaultTagger('NN')
+    t1 = nltk.UnigramTagger(nltk.corpus.treebank.tagged_sents(simplify_tags=True), backoff=t0)
+    t2 = nltk.BigramTagger(nltk.corpus.treebank.tagged_sents(simplify_tags=True), backoff=t1)
+
+    cfd = t2.ConfusionMatrix(corpus, tabulate=tabulate)
+    return cfd
+    
 if __name__ == '__main__':
     pass
 

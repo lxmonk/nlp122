@@ -151,13 +151,12 @@
 <li><a href="#sec-2-2">2.2 Affix Tagger</a></li>
 </ul>
 </li>
-<li><a href="#sec-3">3 Fine-grained Error Analysis [1/5]</a>
+<li><a href="#sec-3">3 Fine-grained Error Analysis [3/5]</a>
 <ul>
 <li><a href="#sec-3-1">3.1 Known vs. Unknown Accuracy</a></li>
 <li><a href="#sec-3-2">3.2 Per Tag Precision and Recall</a></li>
 <li><a href="#sec-3-3">3.3 Confusion Matrix</a></li>
-<li><a href="#sec-3-4">3.4 SensAitivity to the Size and Structure of the Training Set: Cross-Validation</a></li>
-<li><a href="#sec-3-5">3.5 Stratified Samples</a></li>
+<li><a href="#sec-3-4">3.4 Stratified Samples</a></li>
 </ul>
 </li>
 </ul>
@@ -171,7 +170,7 @@ and not <code>urllib</code>, as suggested in the tutorial. The web (and python)
 have evolved since python 2.5, used in the nltk book, was released
 in 2008. <br/>
 Additionally, since <code>xgoogle</code> seemed to return very few results (1-3 on
-most searches), I used <a href="http://breakingcode.wordpress.com/2010/06/29/google-search-python/">this script</a> instead.
+most searches), I used <a href="http://breakingcode.wordpress.com/2010/06/29/google-search-python/">this script</a> inst
 </p>
 
 <div id="outline-container-1" class="outline-2">
@@ -312,7 +311,7 @@ In order to compare two taggers, I wrote the function:
             print 'first tagger:  {}'.format(' '.join(['/'.join(word_tag_tuple)
                                                       for word_tag_tuple in tagged_by_1[i]]))
             print 'second tagger: {}'.format(' '.join(['/'.join(word_tag_tuple)
-                                                      for word_tag_tuple in tagged_by_2][i]))
+                                                      for word_tag_tuple in tagged_by_2[i]]))
 </pre>
 
 </div>
@@ -960,7 +959,7 @@ studies in linguistics.
 </div>
 
 <div id="outline-container-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> Fine-grained Error Analysis [1/5]</h2>
+<h2 id="sec-3"><span class="section-number-2">3</span> Fine-grained Error Analysis [3/5]</h2>
 <div class="outline-text-2" id="text-3">
 
 
@@ -1016,7 +1015,8 @@ def evaluate2(self, gold):
 <h3 id="sec-3-2"><span class="section-number-3">3.2</span> Per Tag Precision and Recall</h3>
 <div class="outline-text-3" id="text-3-2">
 
-
+<p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-05-03 Thu 10:21</span></span><br/>
+</p>
 
 
 
@@ -1073,27 +1073,135 @@ def evaluate2(self, gold):
 <h3 id="sec-3-3"><span class="section-number-3">3.3</span> Confusion Matrix</h3>
 <div class="outline-text-3" id="text-3-3">
 
+<p>   The data structure for this is the ConditionalFreqDist. <br/>
+   The code (in <code>api.py</code>):
+</p>
+
+
+<pre class="example">def ConfusionMatrix(self, corpus_test, tabulate=False):
+    from nltk import ConditionalFreqDist
+    tagged_sents = self.batch_tag([untag(sent) for sent in corpus_test])
+    corpus_tokens = sum(corpus_test, []) 
+    tagger_tokens = sum(tagged_sents, [])
+
+    errors = []
+    for tagger_res, corpus_res in zip(tagger_tokens, corpus_tokens):
+        t_tagger = tagger_res[1]
+        t_corpus = corpus_res[1]
+        if t_tagger != t_corpus:
+            errors.append((t_tagger, t_corpus))
+
+    cfd = ConditionalFreqDist(errors)
+    if tabulate:
+        cfd.tabulate()
+    return cfd
+</pre>
+
+<p>
+   Results for brown corpus (simplified tags):
+</p>
+
+
+<pre class="example">
+#+END_EXAMPLE
+
+** DONE Sensitivity to the Size and Structure of the Training Set: Cross-Validation
+   CLOSED: [2012-05-03 Thu 22:42]
+   The code for the function:
+#+BEGIN_SRC python 
+from nltk.tag import AffixTagger
+
+class MyAffixTagger(AffixTagger):
+    def __init__(self, train=None, model=None, affix_length=-3,
+                 min_stem_length=2, backoff=None, cutoff=0, verbose=False,
+                 H_param=0):
+        self.H_param = H_param
+        AffixTagger.__init__(self, train, model, affix_length,
+                             min_stem_length, backoff, cutoff, verbose)
+
+
+    def _train(self, tagged_corpus, cutoff=0, verbose=False):
+        """
+        Initialize this ContextTagger's ``_context_to_tag`` table
+        based on the given training data.  In particular, for each
+        context ``c`` in the training data, set
+#+END_SRC
+   Produced:
+#+BEGIN_EXAMPLE
+In [12] t0 = nltk.DefaultTagger('NN')
+In [13] t1 = nltk.UnigramTagger(nltk.corpus.treebank.tagged_sents(simplify_tags=True), backoff=t0)
+In [14] t2 = nltk.BigramTagger(nltk.corpus.treebank.tagged_sents(simplify_tags=True), backoff=t1)
+In [15] table = t2.crossValidate(nltk.corpus.brown.tagged_sents(simplify_tags=True), 10)
+
+ i  accuracy(i)
+ --------------
+ 0)   0.135158702476
+ 1)   0.483606557377
+ 2)   0.486920125567
+ 3)   0.472096267876
+ 4)   0.460062783397
+ 5)   0.482211370771
+ 6)   0.514475061039
+ 7)   0.571154516917
+ 8)   0.56853854203
+ 9)   0.55284269271
+
+In [16]: average(table.values())
+Out[16]: 0.47270666201604455
+</pre>
+
+<p>
+   We can see that the accuracy of the 0<sup>th</sup> iteration is very low in
+   comparison to the others. Ignoring it produces:
+</p>
+
+
+<pre class="example">In [18]: average([table[i] for i in range(1,10)])
+Out[18]: 0.51021199085377655
+</pre>
+
+<p>
+   Which is not very different. This, however, shows the importance of
+   covering as much of the training set as possible, since there might
+   be significant variations.
+</p>
+
 </div>
 
 </div>
 
 <div id="outline-container-3-4" class="outline-3">
-<h3 id="sec-3-4"><span class="section-number-3">3.4</span> SensAitivity to the Size and Structure of the Training Set: Cross-Validation</h3>
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Stratified Samples</h3>
 <div class="outline-text-3" id="text-3-4">
 
-</div>
-
-</div>
-
-<div id="outline-container-3-5" class="outline-3">
-<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Stratified Samples</h3>
-<div class="outline-text-3" id="text-3-5">
+<p>   To define sentence lengths, I used:
+</p>
 
 
+<pre class="example">fd = nltk.FreqDist([len(sent) for sent in nltk.corpus.brown.tagged_sents()])
+hist(list(chain.from_iterable([[k]*fd[k] for k in fd.keys()])),
+     bins=(max(fd.keys()) - min(fd.keys()) + 1))
+</pre>
 
 
+<p>
+   The histogram is this:
+<img src="hist_3.5.png" width="950" alt="hist_3.5.png" />
+</p>
+<p>
+   I choose the lengths of \(short \leq 12\) (short, after first peak), 
+   \(12 &lt; medium \leq 23\) (medium), and \(23 &lt; long\) (long).
+   Looking at the numbers, we see it's the integer equivalent of
+   dividing to 3 equal groups:
+</p>
+   
 
+\begin{equation}
+\sum_{i=0}^{\infty} fd[i] = 57340,\: \sum_{i=0}^{12} fd[i] = 18167 \approx
+\frac{1}{3} \cdot 57340,\: \sum_{i=0}^{23} fd[i] = 38322 \approx \frac{2}{3}
+\cdot 57340
 
+\end{equation}
 
 
 </div>
