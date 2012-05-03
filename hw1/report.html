@@ -155,7 +155,7 @@
 <li><a href="#sec-2-2">2.2 Affix Tagger</a></li>
 </ul>
 </li>
-<li><a href="#sec-3">3 Fine-grained Error Analysis [0/5]</a>
+<li><a href="#sec-3">3 Fine-grained Error Analysis [1/5]</a>
 <ul>
 <li><a href="#sec-3-1">3.1 Known vs. Unknown Accuracy</a></li>
 <li><a href="#sec-3-2">3.2 Per Tag Precision and Recall</a></li>
@@ -592,8 +592,6 @@ from itertools import chain
 
 <pre class="example">from nltk.tag import AffixTagger
 
-H_PARAM = 0
-
 class MyAffixTagger(AffixTagger):
     def __init__(self, train=None, model=None, affix_length=-3,
                  min_stem_length=2, backoff=None, cutoff=0, verbose=False,
@@ -602,7 +600,6 @@ class MyAffixTagger(AffixTagger):
         AffixTagger.__init__(self, train, model, affix_length,
                              min_stem_length, backoff, cutoff, verbose)
 
-        # All this trouble for *this* line:
 
     def _train(self, tagged_corpus, cutoff=0, verbose=False):
         """
@@ -690,6 +687,9 @@ class MyAffixTagger(AffixTagger):
             print ' ---&gt; it scored {:.5f}'.format(score)
             options.append((score, cutoff_candidate, self._context_to_tag))
 
+        _, choosen_cutoff, self._context_to_tag = max(options)
+        print ('choosen cutoff value is {}, which scores {} on the '
+               'testset.'.format(choosen_cutoff,
 </pre>
 
 <p>
@@ -726,14 +726,14 @@ value:
 </p>
 
 
-<pre class="example">from numpy import linspace
+<pre class="example">corp = nltk.corpus.brown.tagged_sents(simplify_tags=True)
+for h in linspace(0,1,10)[:-1]: # remove the 1.0
+    print
+    print 'optimize_h_param: H_param={:f}'.format(h)
+    affix = MyAffixTagger(corp, H_param=h)
+    affix.optimize_parameter()
 
-def optimize_H_param():
-    corp = nltk.corpus.brown.tagged_sents(simplify_tags=True)
-    for h in linspace(0,1,10)[:-1]: # remove the 1.0
-        print
-        print 'optimize_h_param: H_param={:f}'.format(h)
-        affix = MyAffixTagger(corp, H_param=h)
+
 </pre>
 
 
@@ -969,7 +969,7 @@ studies in linguistics.
 </div>
 
 <div id="outline-container-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> Fine-grained Error Analysis [0/5]</h2>
+<h2 id="sec-3"><span class="section-number-2">3</span> Fine-grained Error Analysis [1/5]</h2>
 <div class="outline-text-2" id="text-3">
 
 
@@ -979,7 +979,8 @@ studies in linguistics.
 <h3 id="sec-3-1"><span class="section-number-3">3.1</span> Known vs. Unknown Accuracy</h3>
 <div class="outline-text-3" id="text-3-1">
 
-<p>   I propose to identify known words as words that appeared more than
+<p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-05-03 Thu 01:29</span></span><br/>
+   I propose to identify known words as words that appeared more than
    \(N\) times in the training corpus, where \(N&gt;0\) (I'll use \(N=1\), but that's just
    one option).
 </p>
@@ -993,7 +994,8 @@ studies in linguistics.
 </p>
 
 
-<pre class="example">def evaluate2(self, gold):
+<pre class="example">
+def evaluate2(self, gold):
     """
     This is part of nlp12 course, hw 1.
     """
@@ -1008,10 +1010,10 @@ studies in linguistics.
 
     known_test_tokens = ifilter(lambda word, tag: word in self.wordset, test_tokens)
     unknown_test_tokens = ifilterfalse(lambda word, tag: word in self.wordset, test_tokens)
-
+    # return a tuple (known_accuracy, unknown_accuracy)
     return (accuracy(known_gold_tokens, known_test_tokens),
-            accuracy(unknown_gold_tokens, unknown_test_tokens))
 </pre>
+
 
 
 </div>
@@ -1021,6 +1023,44 @@ studies in linguistics.
 <div id="outline-container-3-2" class="outline-3">
 <h3 id="sec-3-2"><span class="section-number-3">3.2</span> Per Tag Precision and Recall</h3>
 <div class="outline-text-3" id="text-3-2">
+
+
+
+
+
+<pre class="example">
+def MicroEvaluate(self, corpus_test):
+    all_tags = set([t for sent in corpus_test for (w,t) in sent])
+    for tag in all_tags:
+        tagged_sents = self.batch_tag([untag(sent) for sent in corpus_test])
+        corpus_tokens = sum(corpus_test, []) 
+        tagger_tokens = sum(tagged_sents, [])
+
+        TP = TN = FP = FN = 0
+
+        for tagged, gold in zip(tagger_tokens, corpus_tokens):
+            wt, tt = tagged     # word_tagger, tag_tagger
+            wg, tg = gold       # word_gold, tag_gold
+            if wt != wg:       
+                raise RuntimeError('the tagger changed the words or the word sequence '
+                                   '(got {} instead of {})'.format(wt, wg))
+            if tt == tag:
+                if tt == tg:
+                    TP += 1
+                else:
+                    FP += 1
+            else:
+                if tg == tag:
+                    FN += 1
+                else:
+                    TN += 1
+
+        _percision = TP / (TP + FP)
+        _recall = TP / (TP + FN)
+        _f_measure = (2 * TP) / (2 * TP + FP + FN)
+</pre>
+
+
 
 </div>
 

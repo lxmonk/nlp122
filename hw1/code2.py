@@ -152,8 +152,6 @@ def flatten(listOfLists):
     
 from nltk.tag import AffixTagger
 
-H_PARAM = 0
-
 class MyAffixTagger(AffixTagger):
     def __init__(self, train=None, model=None, affix_length=-3,
                  min_stem_length=2, backoff=None, cutoff=0, verbose=False,
@@ -162,8 +160,7 @@ class MyAffixTagger(AffixTagger):
         AffixTagger.__init__(self, train, model, affix_length,
                              min_stem_length, backoff, cutoff, verbose)
 
-        # All this trouble for *this* line:
-        
+                
     def _train(self, tagged_corpus, cutoff=0, verbose=False):
         """
         Initialize this ContextTagger's ``_context_to_tag`` table

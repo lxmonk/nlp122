@@ -366,8 +366,9 @@ but for most of them - I can't really imagine why they are so good.
 I have to admit that I don't recognize any of these as a suffix I
 studies in linguistics.
 
-* Fine-grained Error Analysis [0/5]
-** TODO Known vs. Unknown Accuracy
+* Fine-grained Error Analysis [1/5]
+** DONE Known vs. Unknown Accuracy
+   CLOSED: [2012-05-03 Thu 01:29]
    I propose to identify known words as words that appeared more than
    $N$ times in the training corpus, where $N>0$ (I'll use $N=1$, but that's just
    one option).
@@ -379,7 +380,12 @@ studies in linguistics.
    the following manner:
 #+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "70-88"
 
+
 ** TODO Per Tag Precision and Recall
+
+#+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "89-119"
+
+
 ** TODO Confusion Matrix
 ** TODO SensAitivity to the Size and Structure of the Training Set: Cross-Validation
 ** TODO Stratified Samples
