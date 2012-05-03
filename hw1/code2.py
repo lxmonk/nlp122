@@ -263,8 +263,8 @@ def optimize_H_param():
 
 
 def compare_taggers(tagger1, tagger2, testset):
-    tagged_by_1 = tagger1.batch_tag([w for sent in testset for w in sent])
-    tagged_by_2 = tagger2.batch_tag([w for sent in testset for w in sent])
+    tagged_by_1 = tagger1.batch_tag([w for sent in testset for (w, t) in sent])
+    tagged_by_2 = tagger2.batch_tag([w for sent in testset for (w, t) in sent])
     for i, ((w1, t1), (w2, t2)) in enumerate(zip(tagged_by_1, tagged_by_2)):
         if w1 != w2:
             raise RuntimeError("different word order: {} / {}".format(w1, w2))
@@ -282,6 +282,53 @@ def conf(corpus, tabulate=False):
 
     cfd = t2.ConfusionMatrix(corpus, tabulate=tabulate)
     return cfd
+
+CATEGORIES = ['news', 'editorial', 'reviews', 'religion', 'hobbies',
+              'lore', 'belles_lettres', 'government', 'learned',
+              'fiction', 'mystery', 'science_fiction', 'adventure',
+              'romance', 'humor']
+
+def stratifiedSamples(classes, N=10):
+    from numpy.random import shuffle # and it's O(n), knuth...
+    training = []
+    test = []
+        
+    frac = 1.0 / N
+    if type(classes) == int or type(classes[0]) == int: # sentence length
+        short = []
+        med = []
+        lng = []
+        for sent in nltk.corpus.brown.tagged_sents(simplify_tags=True):
+            s_len = len(sent)
+            if s_len <= 12:
+                short.append(sent)
+            elif s_len <= 23:
+                med.append(sent)
+            else:
+                lng.append(sent)
+                    
+        shuffle(short)
+        shuffle(med)
+        shuffle(lng)
+
+        for arr in (short, med, lng):
+            cut = int(len(arr) * frac)
+            test.extend(arr[:cut])
+            training.extend(arr[cut:])
+            
+    elif type(classes[0]) == str: # categories..
+        for cat in classes:
+            sents = list(nltk.corpus.brown.tagged_sents(categories=cat, simplify_tags=True))
+            shuffle(sents)
+            cut = int(len(sents) * frac)
+            test.extend(sents[:cut])
+            training.extend(sents[cut:])
+
+        
+    return training, test
+    
+    
+
     
 if __name__ == '__main__':
     pass

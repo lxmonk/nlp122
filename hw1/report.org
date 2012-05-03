@@ -1,11 +1,11 @@
 #+TITLE:     NLP12 Assignment 1: Parts of Speech Tagging
 #+AUTHOR:    Aviad Reich, ID 052978509
 #+EMAIL:     avi.rei@gmail.com
-#+DATE:      2012-03-19 Mon
+#+DATE:      2012-04-26 Thu
 #+DESCRIPTION:
 #+KEYWORDS:
 #+LANGUAGE:  en
-#+OPTIONS:   H:3 num:t toc:1-3 \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   H:3 num:t toc:1-3 \n:nil @:t ::t |:t ^:t -:t f:t *:t <:th
 #+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
 #+EXPORT_SELECT_TAGS: export
@@ -17,14 +17,17 @@
 
 #+TEXT: [TABLE-OF-CONTENTS]
 
-NOTES: In this assignment, the new "[[http://docs.python-requests.org/en/latest/index.html#][requests]]" python library was used,
-and not =urllib=, as suggested in the tutorial. The web (and python)
-have evolved since python 2.5, used in the nltk book, was released
-in 2008. \\
-Additionally, since =xgoogle= seemed to return very few results (1-3 on
-most searches), I used [[http://breakingcode.wordpress.com/2010/06/29/google-search-python/][this script]] inst
+*NOTES:* 
+1) In this assignment, the new "[[http://docs.python-requests.org/en/latest/index.html#][requests]]" python library was used, and
+   not =urllib=, as suggested in the tutorial. The web (and python)
+   have evolved since python 2.5, used in the nltk book, was released
+   in 2008. 
+2) Additionally, since =xgoogle= seemed to return very few results
+   (1-3 on most searches), I used [[http://breakingcode.wordpress.com/2010/06/29/google-search-python/][this script]] instead. 
+3) This document has some equations that require javascript to run,
+   and an internet connection (to http://orgmode.org/ for the functions).
 
-* Data Exploration [1/2]
+* Data Exploration [1/1]
 ** DONE Gathering and cleaning up data
    CLOSED: [2012-04-30 Mon 22:44]
 
@@ -298,7 +301,7 @@ of 1-3 are equally good.
    It does not (!!)
 
 2) *How do you determine the range of values to test for the cutoff?*
-   I used the values 1-5, 7,9, 10, 20, 30, 40, 50. This was not taken
+   I used the values 1-5, 7, 9, 10, 20, 30, 40, 50. This was not taken
    from the corpus, but seemed to give more than reasonable cover for
    several corpora.
   
@@ -361,7 +364,7 @@ but for most of them - I can't really imagine why they are so good.
 I have to admit that I don't recognize any of these as a suffix I
 studies in linguistics.
 
-* Fine-grained Error Analysis [3/5]
+* Fine-grained Error Analysis [5/5]
 ** DONE Known vs. Unknown Accuracy
    CLOSED: [2012-05-03 Thu 01:29]
 
@@ -370,7 +373,9 @@ studies in linguistics.
    one option).
 
    I suggest adding the code (for $N=1$): \\
-   ~self.wordset = set([word for sentence in train for (word, tag) in sentence])~
+#+BEGIN_SRC python
+self.wordset = set([word for sentence in train for (word, tag) in sentence])
+#+END_SRC   
    
    To every tagger. This could be used in the =evaluate2= method, in
    the following manner:
@@ -383,19 +388,86 @@ studies in linguistics.
 #+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "88-129"
 
 
-** TODO Confusion Matrix
+** DONE Confusion Matrix
+   CLOSED: [2012-05-04 Fri 00:34]
    The data structure for this is the ConditionalFreqDist. \\
    The code (in =api.py=):
 #+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "129-146"
-   Results for brown corpus (simplified tags):
+   Results for brown corpus (simplified tags, only the first 10000
+   sentences, due to time limitations):
 #+BEGIN_EXAMPLE
+time cfd = conf(nltk.corpus.brown.tagged_sents(simplify_tags=True)[:10000],True)
+            '    (    )    *    .  ADJ  ADV  CNJ  DET   EX   FW  MOD    N  NIL   NP  NUM    P  PRO   TO   UH    V VB+PPO  VBZ   VD   VG   VN   WH
+       0   78    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0
+ ''    0    6    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  ,    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  :  673    0    0    0    0  836    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0
+ADJ    0    0    0    0    0    0    0  323    1 2009    0    0    0  475    0   78  427   22    0    0    0   30    0    0    7   47   70    0
+ADV    0    0    0    0  834    0  121    0   55 1300   51    0    0   21    0    0    3   38    0    0    2    8    0    0    0    0    0   82
+CNJ    0    0    0    0    0    0    0   27    0    2    0    0    0    0    0    0    0   31    0    0    0    0    0    0    0    0    0    0
+DET    0    0    0    0    0    0    6   25   76    0    0    7    0    8    0    0    0    0    0    0    0    0    0    0    0    0    0    3
+ EX    0    0    0    0    0    0    0   49    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+ FW    0    0    0    0    0    0    0    9    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  L    0    0    0    0    0    0    0    0    0   23    0    0    0    0    0    0   47    0    0    0    0    0    0    0    0    0    0    0
+MOD    0    0    0    0    0    0    0    0    0    0    0    0    0   17    0    0    0    0    0    0    0    2    0    0    0    0    0    0
+  N    0    0    0    0    0    0  417   63    0   44    0    7    4    0    0   10   28   13  260    0    2  509    0  177   10  228   11    0
+ NN    0    0  406  409    0    0 4232  911    9  155    7  200  155 14757    1 7540  883   87  344    0   33 1307    2  569  653 1105 1376   39
+ NP    0    0    0    0    0    0 1245   12    0    9    0   26    0 3435    0    0   28    0    3    0    0    7    0    0    0    6  168    0
+NUM    0    0    0    0    0    0    4    0    0    0    0    0    0    7    0    0    0    0   55    0    0    0    0    0    0    0    0    0
+  P    0    0    0    0    0    0   18  601 3516  419    0   12    0    7    0    0    0    0    1    5    0   18    0    0    0    0    0  141
+PRO    0    0    0    0    0    0    0  667    0    1    0    0    0    1    0    0    0  122    0    0    0    0    0    0    0    0    0    0
+ TO    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0 2021    0    0    0    0    0    0    0    0    0    0
+ UH    0    0    0    0    0    0    1    0    0    2    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  V    0    0    0    0    0    0  130   16    1    0    0    0    5 1007    0    0    0    0    0    0    9    0    0 1088   32    0   41    0
+ VD    0    0    0    0    0    0    7    0    0    0    0    0    0   10    0    0    0    0    0    0    0 2460    0    0    0    0  700    0
+ VG    0    0    0    0    0    0   37    0    1    0    0    0    0  163    0    0    0  102    0    0    0  194    0    0    0    0    0    0
+ VN    0    0    0    0    0    0   11    0    0    0    0    0    0   53    0    0    0    0    0    0    0  533    0    0  842    0    0    0
+ WH    0    0    0    0    0    0    0    0  256   40    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0
+CPU times: user 106.12 s, sys: 0.19 s, total: 106.31 s
+Wall time: 106.71 s
 
 #+END_EXAMPLE
 
+#+BEGIN_EXAMPLE
+In [7]: cfd = conf(nltk.corpus.brown.tagged_sents(simplify_tags=False)[:10000],True)
+
+# too big to fit in page, so
+
+In [8]: for c in cfd.conditions():
+   ...:     print '{} {}'.format(c, cfd[c].max())
+   ...:     
+ '
+'' '
+, ,-HL
+. .-HL
+: .
+ADJ JJ
+ADV RB
+CNJ CC
+DET AT
+EX RB
+FW RB
+L CD
+MOD MD
+N NN
+NN NP
+NP NN-TL
+NUM CD
+P IN
+PRO PP$
+TO IN
+UH AT
+V VB
+VD VBD
+VG VBG
+VN VBN
+WH WDT
+
+#+END_EXAMPLE
 ** DONE Sensitivity to the Size and Structure of the Training Set: Cross-Validation
    CLOSED: [2012-05-03 Thu 22:42]
    The code for the function:
-#+INCLUDE "code2.py" src python :lines "153-169"
+#+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "147-164"
    Produced:
 #+BEGIN_EXAMPLE
 In [12] t0 = nltk.DefaultTagger('NN')
@@ -430,7 +502,8 @@ Out[18]: 0.51021199085377655
    be significant variations.
       
 
-** TODO Stratified Samples
+** DONE Stratified Samples
+   CLOSED: [2012-05-04 Fri 00:33]
    To define sentence lengths, I used:
 #+BEGIN_SRC python
 fd = nltk.FreqDist([len(sent) for sent in nltk.corpus.brown.tagged_sents()])
@@ -451,7 +524,75 @@ hist(list(chain.from_iterable([[k]*fd[k] for k in fd.keys()])),
 \sum_{i=0}^{\infty} fd[i] = 57340,\: \sum_{i=0}^{12} fd[i] = 18167 \approx
 \frac{1}{3} \cdot 57340,\: \sum_{i=0}^{23} fd[i] = 38322 \approx \frac{2}{3}
 \cdot 57340
-
 \end{equation}
+#+INCLUDE "code2.py" src python :lines "291-328"
+Perform a cycle of training-testing on the Brown corpus for the last tagger discussed in class for each of the following cases:
+
+1) *Random split 90%-10%* \\
+#+BEGIN_SRC python
+In [3]: corpus = list(nltk.corpus.brown.tagged_sents(simplify_tags=True))
+
+In [4]: from numpy.random import shuffle
+
+In [5]: shuffle(corpus)
+
+In [6]: trn = corpus[:len(corpus) * 9 / 10]
+
+In [7]: tst = corpus[len(corpus) * 9 / 10:]
+
+In [8]: t0 = nltk.DefaultTagger('NN')
+
+In [9]: t1 = nltk.UnigramTagger(trn, backoff=t0)
+
+In [10]: t2 = nltk.BigramTagger(trn, backoff=t1)
+
+In [11]: t2.evaluate(tst)
+Out[11]: 0.9310641552729706
+#+END_SRC 
 
 
+2) *Stratified split 90%-10% according to sentence length (split
+   short/medium/long)* 
+
+#+BEGIN_SRC python
+In [12]: trn, tst = stratifiedSamples([12, 23], 10)
+
+In [13]: t0 = nltk.DefaultTagger('NN')
+
+In [14]: t1 = nltk.UnigramTagger(trn, backoff=t0)
+
+In [15]: t2 = nltk.BigramTagger(trn, backoff=t1)
+
+In [16]: t2.evaluate(tst)
+Out[16]: 0.9313322015878732
+#+END_SRC
+
+3) *Stratified split 90%-10% according to the sentence genre.*
+
+#+BEGIN_SRC python
+In [32]: trn, tst = stratifiedSamples(CATEGORIES,10)
+
+In [34]: t0 = nltk.DefaultTagger('NN')
+
+In [35]: t1 = nltk.UnigramTagger(trn, backoff=t0)
+
+In [36]: t2 = nltk.BigramTagger(trn, backoff=t1)
+
+In [37]: t2.evaluate(tst)
+Out[37]: 0.9325498656042589
+#+END_SRC
+
+    We can see that all 3 cases enjoy very good accuracy $(> 0.93)$,
+    with very slight improvement for the two stratified cases over the
+    random one. I believe the reason for this is that the brown corpus
+    has a great number of tagged sentences, and therefore the random
+    sampling is as diverse and as good as the stratified ones. Perhaps
+    in a smaller corpus, there would have been more visible differences.
+
+
+#+BEGIN_HTML
+<p>
+    <a href="http://validator.w3.org/check?uri=referer"><img
+      src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
+</p>
+#+END_HTML

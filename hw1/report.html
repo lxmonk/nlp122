@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
 <meta name="title" content="NLP12 Assignment 1: Parts of Speech Tagging"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2012-03-19 Mon"/>
+<meta name="generated" content="2012-04-26 Thu"/>
 <meta name="author" content="Aviad Reich, ID 052978509"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -138,7 +138,7 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">1 Data Exploration [1/2]</a>
+<li><a href="#sec-1">1 Data Exploration [1/1]</a>
 <ul>
 <li><a href="#sec-1-1">1.1 Gathering and cleaning up data</a></li>
 <li><a href="#sec-1-2">1.2 Gathering basic statistics</a></li>
@@ -151,12 +151,13 @@
 <li><a href="#sec-2-2">2.2 Affix Tagger</a></li>
 </ul>
 </li>
-<li><a href="#sec-3">3 Fine-grained Error Analysis [3/5]</a>
+<li><a href="#sec-3">3 Fine-grained Error Analysis [5/5]</a>
 <ul>
 <li><a href="#sec-3-1">3.1 Known vs. Unknown Accuracy</a></li>
 <li><a href="#sec-3-2">3.2 Per Tag Precision and Recall</a></li>
 <li><a href="#sec-3-3">3.3 Confusion Matrix</a></li>
-<li><a href="#sec-3-4">3.4 Stratified Samples</a></li>
+<li><a href="#sec-3-4">3.4 Sensitivity to the Size and Structure of the Training Set: Cross-Validation</a></li>
+<li><a href="#sec-3-5">3.5 Stratified Samples</a></li>
 </ul>
 </li>
 </ul>
@@ -165,16 +166,25 @@
 
 
 <p>
-NOTES: In this assignment, the new "<a href="http://docs.python-requests.org/en/latest/index.html#">requests</a>" python library was used,
-and not <code>urllib</code>, as suggested in the tutorial. The web (and python)
-have evolved since python 2.5, used in the nltk book, was released
-in 2008. <br/>
-Additionally, since <code>xgoogle</code> seemed to return very few results (1-3 on
-most searches), I used <a href="http://breakingcode.wordpress.com/2010/06/29/google-search-python/">this script</a> inst
-</p>
+<b>NOTES:</b> 
+</p><ol>
+<li>In this assignment, the new "<a href="http://docs.python-requests.org/en/latest/index.html#">requests</a>" python library was used, and
+   not <code>urllib</code>, as suggested in the tutorial. The web (and python)
+   have evolved since python 2.5, used in the nltk book, was released
+   in 2008. 
+</li>
+<li>Additionally, since <code>xgoogle</code> seemed to return very few results
+   (1-3 on most searches), I used <a href="http://breakingcode.wordpress.com/2010/06/29/google-search-python/">this script</a> instead. 
+</li>
+<li>This document has some equations that require javascript to run,
+   and an internet connection (to <a href="http://orgmode.org/">http://orgmode.org/</a> for the functions).
+</li>
+</ol>
+
+
 
 <div id="outline-container-1" class="outline-2">
-<h2 id="sec-1"><span class="section-number-2">1</span> Data Exploration [1/2]</h2>
+<h2 id="sec-1"><span class="section-number-2">1</span> Data Exploration [1/1]</h2>
 <div class="outline-text-2" id="text-1">
 
 
@@ -301,8 +311,8 @@ In order to compare two taggers, I wrote the function:
 
 
 <pre class="example">def compare_taggers(tagger1, tagger2, testset):
-    tagged_by_1 = tagger1.batch_tag([w for sent in testset for w in sent])
-    tagged_by_2 = tagger2.batch_tag([w for sent in testset for w in sent])
+    tagged_by_1 = tagger1.batch_tag([w for sent in testset for (w, t) in sent])
+    tagged_by_2 = tagger2.batch_tag([w for sent in testset for (w, t) in sent])
     for i, ((w1, t1), (w2, t2)) in enumerate(zip(tagged_by_1, tagged_by_2)):
         if w1 != w2:
             raise RuntimeError("different word order: {} / {}".format(w1, w2))
@@ -882,7 +892,7 @@ of 1-3 are equally good.
 
 </li>
 <li><b>How do you determine the range of values to test for the cutoff?</b>
-   I used the values 1-5, 7,9, 10, 20, 30, 40, 50. This was not taken
+   I used the values 1-5, 7, 9, 10, 20, 30, 40, 50. This was not taken
    from the corpus, but seemed to give more than reasonable cover for
    several corpora.
 
@@ -959,7 +969,7 @@ studies in linguistics.
 </div>
 
 <div id="outline-container-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> Fine-grained Error Analysis [3/5]</h2>
+<h2 id="sec-3"><span class="section-number-2">3</span> Fine-grained Error Analysis [5/5]</h2>
 <div class="outline-text-2" id="text-3">
 
 
@@ -978,8 +988,13 @@ studies in linguistics.
 </p>
 <p>
    I suggest adding the code (for \(N=1\)): <br/>
-   <code>self.wordset = set([word for sentence in train for (word, tag) in sentence])</code>
 </p>
+
+
+<pre class="example">self.wordset = set([word for sentence in train for (word, tag) in sentence])
+</pre>
+
+
 <p>   
    To every tagger. This could be used in the <code>evaluate2</code> method, in
    the following manner:
@@ -1073,7 +1088,8 @@ def evaluate2(self, gold):
 <h3 id="sec-3-3"><span class="section-number-3">3.3</span> Confusion Matrix</h3>
 <div class="outline-text-3" id="text-3-3">
 
-<p>   The data structure for this is the ConditionalFreqDist. <br/>
+<p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-05-04 Fri 00:34</span></span><br/>
+   The data structure for this is the ConditionalFreqDist. <br/>
    The code (in <code>api.py</code>):
 </p>
 
@@ -1098,37 +1114,119 @@ def evaluate2(self, gold):
 </pre>
 
 <p>
-   Results for brown corpus (simplified tags):
+   Results for brown corpus (simplified tags, only the first 10000
+   sentences, due to time limitations):
 </p>
 
 
-<pre class="example">
-#+END_EXAMPLE
+<pre class="example">time cfd = conf(nltk.corpus.brown.tagged_sents(simplify_tags=True)[:10000],True)
+            '    (    )    *    .  ADJ  ADV  CNJ  DET   EX   FW  MOD    N  NIL   NP  NUM    P  PRO   TO   UH    V VB+PPO  VBZ   VD   VG   VN   WH
+       0   78    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0
+ ''    0    6    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  ,    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  :  673    0    0    0    0  836    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0
+ADJ    0    0    0    0    0    0    0  323    1 2009    0    0    0  475    0   78  427   22    0    0    0   30    0    0    7   47   70    0
+ADV    0    0    0    0  834    0  121    0   55 1300   51    0    0   21    0    0    3   38    0    0    2    8    0    0    0    0    0   82
+CNJ    0    0    0    0    0    0    0   27    0    2    0    0    0    0    0    0    0   31    0    0    0    0    0    0    0    0    0    0
+DET    0    0    0    0    0    0    6   25   76    0    0    7    0    8    0    0    0    0    0    0    0    0    0    0    0    0    0    3
+ EX    0    0    0    0    0    0    0   49    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+ FW    0    0    0    0    0    0    0    9    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  L    0    0    0    0    0    0    0    0    0   23    0    0    0    0    0    0   47    0    0    0    0    0    0    0    0    0    0    0
+MOD    0    0    0    0    0    0    0    0    0    0    0    0    0   17    0    0    0    0    0    0    0    2    0    0    0    0    0    0
+  N    0    0    0    0    0    0  417   63    0   44    0    7    4    0    0   10   28   13  260    0    2  509    0  177   10  228   11    0
+ NN    0    0  406  409    0    0 4232  911    9  155    7  200  155 14757    1 7540  883   87  344    0   33 1307    2  569  653 1105 1376   39
+ NP    0    0    0    0    0    0 1245   12    0    9    0   26    0 3435    0    0   28    0    3    0    0    7    0    0    0    6  168    0
+NUM    0    0    0    0    0    0    4    0    0    0    0    0    0    7    0    0    0    0   55    0    0    0    0    0    0    0    0    0
+  P    0    0    0    0    0    0   18  601 3516  419    0   12    0    7    0    0    0    0    1    5    0   18    0    0    0    0    0  141
+PRO    0    0    0    0    0    0    0  667    0    1    0    0    0    1    0    0    0  122    0    0    0    0    0    0    0    0    0    0
+ TO    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0 2021    0    0    0    0    0    0    0    0    0    0
+ UH    0    0    0    0    0    0    1    0    0    2    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  V    0    0    0    0    0    0  130   16    1    0    0    0    5 1007    0    0    0    0    0    0    9    0    0 1088   32    0   41    0
+ VD    0    0    0    0    0    0    7    0    0    0    0    0    0   10    0    0    0    0    0    0    0 2460    0    0    0    0  700    0
+ VG    0    0    0    0    0    0   37    0    1    0    0    0    0  163    0    0    0  102    0    0    0  194    0    0    0    0    0    0
+ VN    0    0    0    0    0    0   11    0    0    0    0    0    0   53    0    0    0    0    0    0    0  533    0    0  842    0    0    0
+ WH    0    0    0    0    0    0    0    0  256   40    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0
+CPU times: user 106.12 s, sys: 0.19 s, total: 106.31 s
+Wall time: 106.71 s
 
-** DONE Sensitivity to the Size and Structure of the Training Set: Cross-Validation
-   CLOSED: [2012-05-03 Thu 22:42]
+</pre>
+
+
+
+<pre class="example">In [7]: cfd = conf(nltk.corpus.brown.tagged_sents(simplify_tags=False)[:10000],True)
+
+# too big to fit in page, so
+
+In [8]: for c in cfd.conditions():
+   ...:     print '{} {}'.format(c, cfd[c].max())
+   ...:     
+ '
+'' '
+, ,-HL
+. .-HL
+: .
+ADJ JJ
+ADV RB
+CNJ CC
+DET AT
+EX RB
+FW RB
+L CD
+MOD MD
+N NN
+NN NP
+NP NN-TL
+NUM CD
+P IN
+PRO PP$
+TO IN
+UH AT
+V VB
+VD VBD
+VG VBG
+VN VBN
+WH WDT
+
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Sensitivity to the Size and Structure of the Training Set: Cross-Validation</h3>
+<div class="outline-text-3" id="text-3-4">
+
+<p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-05-03 Thu 22:42</span></span><br/>
    The code for the function:
-#+BEGIN_SRC python 
-from nltk.tag import AffixTagger
-
-class MyAffixTagger(AffixTagger):
-    def __init__(self, train=None, model=None, affix_length=-3,
-                 min_stem_length=2, backoff=None, cutoff=0, verbose=False,
-                 H_param=0):
-        self.H_param = H_param
-        AffixTagger.__init__(self, train, model, affix_length,
-                             min_stem_length, backoff, cutoff, verbose)
+</p>
 
 
-    def _train(self, tagged_corpus, cutoff=0, verbose=False):
-        """
-        Initialize this ContextTagger's ``_context_to_tag`` table
-        based on the given training data.  In particular, for each
-        context ``c`` in the training data, set
-#+END_SRC
+<pre class="example">def crossValidate(self, corpus, n):
+    from sys import stdout
+    from itertools import chain
+    groups = split_seq(corpus, n)
+
+    table = {}
+    stdout.write(' i  accuracy(i)\n' + 15*'-'+ '\n')
+    for i in range(n):
+        trainset = list(chain.from_iterable(groups[:i] + groups[i+1:]))
+        test = groups[i]
+        self._train(trainset, 0, False)
+        tagged_sents = self.batch_tag([untag(sent) for sent in test])
+        table[i] = accuracy(test, tagged_sents)
+        stdout.write('{:&gt;2})   {}\n'.format(i, table[i])) # print the table
+        stdout.flush()
+
+    return table
+</pre>
+
+<p>
    Produced:
-#+BEGIN_EXAMPLE
-In [12] t0 = nltk.DefaultTagger('NN')
+</p>
+
+
+<pre class="example">In [12] t0 = nltk.DefaultTagger('NN')
 In [13] t1 = nltk.UnigramTagger(nltk.corpus.treebank.tagged_sents(simplify_tags=True), backoff=t0)
 In [14] t2 = nltk.BigramTagger(nltk.corpus.treebank.tagged_sents(simplify_tags=True), backoff=t1)
 In [15] table = t2.crossValidate(nltk.corpus.brown.tagged_sents(simplify_tags=True), 10)
@@ -1170,11 +1268,12 @@ Out[18]: 0.51021199085377655
 
 </div>
 
-<div id="outline-container-3-4" class="outline-3">
-<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Stratified Samples</h3>
-<div class="outline-text-3" id="text-3-4">
+<div id="outline-container-3-5" class="outline-3">
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Stratified Samples</h3>
+<div class="outline-text-3" id="text-3-5">
 
-<p>   To define sentence lengths, I used:
+<p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-05-04 Fri 00:33</span></span><br/>
+   To define sentence lengths, I used:
 </p>
 
 
@@ -1200,17 +1299,146 @@ hist(list(chain.from_iterable([[k]*fd[k] for k in fd.keys()])),
 \sum_{i=0}^{\infty} fd[i] = 57340,\: \sum_{i=0}^{12} fd[i] = 18167 \approx
 \frac{1}{3} \cdot 57340,\: \sum_{i=0}^{23} fd[i] = 38322 \approx \frac{2}{3}
 \cdot 57340
-
 \end{equation}
 
+<pre class="example">def stratifiedSamples(classes, N=10):
+    from numpy.random import shuffle # and it's O(n), knuth...
+    training = []
+    test = []
 
+    frac = 1.0 / N
+    if type(classes) == int or type(classes[0]) == int: # sentence length
+        short = []
+        med = []
+        lng = []
+        for sent in nltk.corpus.brown.tagged_sents(simplify_tags=True):
+            s_len = len(sent)
+            if s_len &lt;= 12:
+                short.append(sent)
+            elif s_len &lt;= 23:
+                med.append(sent)
+            else:
+                lng.append(sent)
+
+        shuffle(short)
+        shuffle(med)
+        shuffle(lng)
+
+        for arr in (short, med, lng):
+            cut = int(len(arr) * frac)
+            test.extend(arr[:cut])
+            training.extend(arr[cut:])
+
+    elif type(classes[0]) == str: # categories..
+        for cat in classes:
+            sents = list(nltk.corpus.brown.tagged_sents(categories=cat, simplify_tags=True))
+            shuffle(sents)
+            cut = int(len(sents) * frac)
+            test.extend(sents[:cut])
+            training.extend(sents[cut:])
+
+
+</pre>
+
+<p>
+Perform a cycle of training-testing on the Brown corpus for the last tagger discussed in class for each of the following cases:
+</p>
+<ol>
+<li><b>Random split 90%-10%</b> <br/>
+</li>
+</ol>
+
+
+
+
+<pre class="example">In [3]: corpus = list(nltk.corpus.brown.tagged_sents(simplify_tags=True))
+
+In [4]: from numpy.random import shuffle
+
+In [5]: shuffle(corpus)
+
+In [6]: trn = corpus[:len(corpus) * 9 / 10]
+
+In [7]: tst = corpus[len(corpus) * 9 / 10:]
+
+In [8]: t0 = nltk.DefaultTagger('NN')
+
+In [9]: t1 = nltk.UnigramTagger(trn, backoff=t0)
+
+In [10]: t2 = nltk.BigramTagger(trn, backoff=t1)
+
+In [11]: t2.evaluate(tst)
+Out[11]: 0.9310641552729706
+</pre>
+
+
+
+<ol>
+<li><b>Stratified split 90%-10% according to sentence length (split    short/medium/long)</b> 
+</li>
+</ol>
+
+
+
+
+
+<pre class="example">In [12]: trn, tst = stratifiedSamples([12, 23], 10)
+
+In [13]: t0 = nltk.DefaultTagger('NN')
+
+In [14]: t1 = nltk.UnigramTagger(trn, backoff=t0)
+
+In [15]: t2 = nltk.BigramTagger(trn, backoff=t1)
+
+In [16]: t2.evaluate(tst)
+Out[16]: 0.9313322015878732
+</pre>
+
+
+<ol>
+<li><b>Stratified split 90%-10% according to the sentence genre.</b>
+</li>
+</ol>
+
+
+
+
+
+<pre class="example">In [32]: trn, tst = stratifiedSamples(CATEGORIES,10)
+
+In [34]: t0 = nltk.DefaultTagger('NN')
+
+In [35]: t1 = nltk.UnigramTagger(trn, backoff=t0)
+
+In [36]: t2 = nltk.BigramTagger(trn, backoff=t1)
+
+In [37]: t2.evaluate(tst)
+Out[37]: 0.9325498656042589
+</pre>
+
+
+<p>
+    We can see that all 3 cases enjoy very good accuracy \((&gt; 0.93)\),
+    with very slight improvement for the two stratified cases over the
+    random one. I believe the reason for this is that the brown corpus
+    has a great number of tagged sentences, and therefore the random
+    sampling is as diverse and as good as the stratified ones. Perhaps
+    in a smaller corpus, there would have been more visible differences.
+</p>
+
+
+
+<p>
+    <a href="http://validator.w3.org/check?uri=referer"><img
+      src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
+</p>
 </div>
 </div>
 </div>
 </div>
 
 <div id="postamble">
-<p class="date">Date: 2012-03-19 Mon</p>
+<p class="date">Date: 2012-04-26 Thu</p>
 <p class="author">Author: Aviad Reich, ID 052978509</p>
 <p class="creator">Org version 7.8.03 with Emacs version 24</p>
 <a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
