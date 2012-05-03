@@ -230,7 +230,6 @@ class MyAffixTagger(AffixTagger):
             sum -= PxXlogPx
         return sum
 
-
         
     def optimize_parameter(self):
         corpus = nltk.corpus.brown.tagged_sents(simplify_tags=True)
@@ -262,6 +261,19 @@ def optimize_H_param():
         affix = MyAffixTagger(corp, H_param=h)
         affix.optimize_parameter()
 
+
+def compare_taggers(tagger1, tagger2, testset):
+    tagged_by_1 = tagger1.batch_tag([w for sent in testset for w in sent])
+    tagged_by_2 = tagger2.batch_tag([w for sent in testset for w in sent])
+    for i, ((w1, t1), (w2, t2)) in enumerate(zip(tagged_by_1, tagged_by_2)):
+        if w1 != w2:
+            raise RuntimeError("different word order: {} / {}".format(w1, w2))
+        if t1 != t2:
+            print "difference in tagging {}:".format(w1)
+            print 'first tagger:  {}'.format(' '.join(['/'.join(word_tag_tuple)
+                                                      for word_tag_tuple in tagged_by_1[i]]))
+            print 'second tagger: {}'.format(' '.join(['/'.join(word_tag_tuple)
+                                                      for word_tag_tuple in tagged_by_2[i]]))
 
 if __name__ == '__main__':
     pass

@@ -140,16 +140,12 @@
 <ul>
 <li><a href="#sec-1">1 Data Exploration [1/2]</a>
 <ul>
-<li><a href="#sec-1-1">1.1 Gathering and cleaning up data</a>
-<ul>
-<li><a href="#sec-1-1-1">1.1.1 Manual Tagging:</a></li>
-</ul>
-</li>
+<li><a href="#sec-1-1">1.1 Gathering and cleaning up data</a></li>
 <li><a href="#sec-1-2">1.2 Gathering basic statistics</a></li>
 <li><a href="#sec-1-3">1.3 Is there a correlation between word size or frequency and ambiguity level?</a></li>
 </ul>
 </li>
-<li><a href="#sec-2">2 Unigram and Affix Tagger [0/2]</a>
+<li><a href="#sec-2">2 Unigram and Affix Tagger [2/2]</a>
 <ul>
 <li><a href="#sec-2-1">2.1 Unigram Tagger</a></li>
 <li><a href="#sec-2-2">2.2 Affix Tagger</a></li>
@@ -229,21 +225,6 @@ most searches), I used <a href="http://breakingcode.wordpress.com/2010/06/29/goo
 
 
 
-</div>
-
-<div id="outline-container-1-1-1" class="outline-4">
-<h4 id="sec-1-1-1"><span class="section-number-4">1.1.1</span> Manual Tagging:</h4>
-<div class="outline-text-4" id="text-1-1-1">
-
-<p> Review the tagging of the new text separately (2 analyses) and
- compare your tagging results. Report the list of words on which your
- 2 manual tagging decisions are different (write a function to
- compare two taggings of the same text saved in 2 different tagged
- files.) Show the differences between each of your tags and the tags
- produced by the automatic tagger. Report how long it took you to
- check the tagging of 50 sentences.  
-</p>
-
 <p>
 This is the code I used:
 </p>
@@ -315,7 +296,25 @@ if __name__ == '__main__':
 </pre>
 
 
-</div>
+<p>
+In order to compare two taggers, I wrote the function:
+</p>
+
+
+<pre class="example">def compare_taggers(tagger1, tagger2, testset):
+    tagged_by_1 = tagger1.batch_tag([w for sent in testset for w in sent])
+    tagged_by_2 = tagger2.batch_tag([w for sent in testset for w in sent])
+    for i, ((w1, t1), (w2, t2)) in enumerate(zip(tagged_by_1, tagged_by_2)):
+        if w1 != w2:
+            raise RuntimeError("different word order: {} / {}".format(w1, w2))
+        if t1 != t2:
+            print "difference in tagging {}:".format(w1)
+            print 'first tagger:  {}'.format(' '.join(['/'.join(word_tag_tuple)
+                                                      for word_tag_tuple in tagged_by_1[i]]))
+            print 'second tagger: {}'.format(' '.join(['/'.join(word_tag_tuple)
+                                                      for word_tag_tuple in tagged_by_2][i]))
+</pre>
+
 </div>
 
 </div>
@@ -380,6 +379,8 @@ def PlotNumberOfTags(corpus):
     # add value tags
     for x,y in zip(C.keys(), C.values()):
         pylab.annotate(str(y), (x,y + 0.5))
+
+    pylab.show()
 </pre>
 
 
@@ -388,17 +389,7 @@ def PlotNumberOfTags(corpus):
 </p>
 
 
-<pre class="example">    pylab.ylabel('Words With This Number of Tags (Log)')
-    pylab.legend(loc=0)
-    # add value tags
-    for x,y in zip(C.keys(), C.values()):
-        pylab.annotate(str(y), (x,y + 0.5))
-
-    pylab.show()
-
-
-
-
+<pre class="example">
 def MostAmbiguousWords(corpus, N):
     word_tag_dict = defaultdict(set)
 
@@ -422,6 +413,11 @@ def ShowExamples(word, cfd, corpus):
     for tag in cfd[word].keys():
         print '\'{}\' as {}: {}\n'.format(word, tag, example(word, tag, corpus))
 
+
+def example(word, tag, corpus):
+    idx = corpus.index((word, tag))
+    sent = corpus[idx-10:idx] + [(word.upper(), tag)] + corpus[idx+1:idx+11]
+    return ' '.join(word for (word, tag) in sent)
 </pre>
 
 
@@ -474,17 +470,7 @@ out, to create the different graphs):
 </p>
 
 
-<pre class="example">        print '\'{}\' as {}: {}\n'.format(word, tag, example(word, tag, corpus))
-
-
-def example(word, tag, corpus):
-    idx = corpus.index((word, tag))
-    sent = corpus[idx-10:idx] + [(word.upper(), tag)] + corpus[idx+1:idx+11]
-    return ' '.join(word for (word, tag) in sent)
-
-
-
-
+<pre class="example">
 def correl_plot3D(corpus):
     from mpl_toolkits.mplot3d import Axes3D
 
@@ -524,6 +510,12 @@ def correl_plot3D(corpus):
     pylab.ylabel('word ambiguity')
 
     pylab.subplot(223)
+    pylab.scatter(zs, xs)
+    pylab.title('word ambiguity - word length')
+    pylab.xlabel('word ambiguity')
+    pylab.ylabel('word length')
+
+    pylab.show()
 </pre>
 
 </div>
@@ -532,7 +524,7 @@ def correl_plot3D(corpus):
 </div>
 
 <div id="outline-container-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> Unigram and Affix Tagger [0/2]</h2>
+<h2 id="sec-2"><span class="section-number-2">2</span> Unigram and Affix Tagger [2/2]</h2>
 <div class="outline-text-2" id="text-2">
 
 
@@ -542,18 +534,12 @@ def correl_plot3D(corpus):
 <h3 id="sec-2-1"><span class="section-number-3">2.1</span> Unigram Tagger</h3>
 <div class="outline-text-3" id="text-2-1">
 
-<p>   This is the code for the Unigram Tagger:
+<p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-05-03 Thu 09:11</span></span><br/>
+   This is the code for the Unigram Tagger:
 </p>
 
 
-<pre class="example">    pylab.xlabel('word ambiguity')
-    pylab.ylabel('word length')
-
-    pylab.show()
-
-
-
-from nltk.tag.api import TaggerI
+<pre class="example">from nltk.tag.api import TaggerI
 import nltk
 
 class MyUnigramTagger(TaggerI):
@@ -576,6 +562,9 @@ class MyUnigramTagger(TaggerI):
 
 # This really should have come with either itertools or standard lib..
 from itertools import chain
+def flatten(listOfLists):
+    "Flatten one level of nesting"
+    return chain.from_iterable(listOfLists)
 </pre>
 
 </div>
@@ -586,7 +575,8 @@ from itertools import chain
 <h3 id="sec-2-2"><span class="section-number-3">2.2</span> Affix Tagger</h3>
 <div class="outline-text-3" id="text-2-2">
 
-<p>This is the code used:
+<p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-05-03 Thu 09:11</span></span><br/>
+This is the code used:
 </p>
 
 
@@ -671,7 +661,6 @@ class MyAffixTagger(AffixTagger):
         return sum
 
 
-
     def optimize_parameter(self):
         corpus = nltk.corpus.brown.tagged_sents(simplify_tags=True)
         corpus_len = len(corpus)
@@ -690,6 +679,7 @@ class MyAffixTagger(AffixTagger):
         _, choosen_cutoff, self._context_to_tag = max(options)
         print ('choosen cutoff value is {}, which scores {} on the '
                'testset.'.format(choosen_cutoff,
+                                 self.evaluate(testset)))
 </pre>
 
 <p>
@@ -726,14 +716,15 @@ value:
 </p>
 
 
-<pre class="example">corp = nltk.corpus.brown.tagged_sents(simplify_tags=True)
-for h in linspace(0,1,10)[:-1]: # remove the 1.0
-    print
-    print 'optimize_h_param: H_param={:f}'.format(h)
-    affix = MyAffixTagger(corp, H_param=h)
-    affix.optimize_parameter()
+<pre class="example">from numpy import linspace
 
-
+def optimize_H_param():
+    corp = nltk.corpus.brown.tagged_sents(simplify_tags=True)
+    for h in linspace(0,1,10)[:-1]: # remove the 1.0
+        print
+        print 'optimize_h_param: H_param={:f}'.format(h)
+        affix = MyAffixTagger(corp, H_param=h)
+        affix.optimize_parameter()
 </pre>
 
 
@@ -980,13 +971,15 @@ studies in linguistics.
 <div class="outline-text-3" id="text-3-1">
 
 <p>    <span class="timestamp-wrapper"><span class="timestamp-kwd">CLOSED: </span> <span class="timestamp">2012-05-03 Thu 01:29</span></span><br/>
+</p>
+<p>
    I propose to identify known words as words that appeared more than
    \(N\) times in the training corpus, where \(N&gt;0\) (I'll use \(N=1\), but that's just
    one option).
 </p>
 <p>
    I suggest adding the code (for \(N=1\)): <br/>
-   <code>self.wordset = set(word for (word, tag) in sentence in train)</code>
+   <code>self.wordset = set([word for sentence in train for (word, tag) in sentence])</code>
 </p>
 <p>   
    To every tagger. This could be used in the <code>evaluate2</code> method, in
@@ -1000,18 +993,17 @@ def evaluate2(self, gold):
     This is part of nlp12 course, hw 1.
     """
 
-    from itertools import ifilter, ifilterfalse
-
     tagged_sents = self.batch_tag([untag(sent) for sent in gold])
     gold_tokens = sum(gold, []) 
     test_tokens = sum(tagged_sents, [])
-    known_gold_tokens = ifilter(lambda word, tag: word in self.wordset, gold_tokens)
-    unknown_gold_tokens = ifilterfalse(lambda word, tag: word in self.wordset, gold_tokens)
+    known_gold_tokens = filter(lambda word, tag: word in self.wordset, gold_tokens)
+    unknown_gold_tokens = filter(lambda word, tag: word not in self.wordset, gold_tokens)
 
-    known_test_tokens = ifilter(lambda word, tag: word in self.wordset, test_tokens)
-    unknown_test_tokens = ifilterfalse(lambda word, tag: word in self.wordset, test_tokens)
+    known_test_tokens = filter(lambda word, tag: word in self.wordset, test_tokens)
+    unknown_test_tokens = filter(lambda word, tag: word not in self.wordset, test_tokens)
     # return a tuple (known_accuracy, unknown_accuracy)
     return (accuracy(known_gold_tokens, known_test_tokens),
+            accuracy(unknown_gold_tokens, unknown_test_tokens))
 </pre>
 
 
@@ -1028,14 +1020,13 @@ def evaluate2(self, gold):
 
 
 
-<pre class="example">
-def MicroEvaluate(self, corpus_test):
+<pre class="example">def MicroEvaluate(self, corpus_test):
     all_tags = set([t for sent in corpus_test for (w,t) in sent])
-    for tag in all_tags:
-        tagged_sents = self.batch_tag([untag(sent) for sent in corpus_test])
-        corpus_tokens = sum(corpus_test, []) 
-        tagger_tokens = sum(tagged_sents, [])
+    tagged_sents = self.batch_tag([untag(sent) for sent in corpus_test])
+    corpus_tokens = sum(corpus_test, []) 
+    tagger_tokens = sum(tagged_sents, [])
 
+    for tag in all_tags:
         TP = TN = FP = FN = 0
 
         for tagged, gold in zip(tagger_tokens, corpus_tokens):
@@ -1054,10 +1045,22 @@ def MicroEvaluate(self, corpus_test):
                     FN += 1
                 else:
                     TN += 1
+        print '{:6}: TP={}, FP={}, FN={}, TN={}'.format(tag, TP, FP, FN, TN)
 
-        _percision = TP / (TP + FP)
-        _recall = TP / (TP + FN)
-        _f_measure = (2 * TP) / (2 * TP + FP + FN)
+        if (TP + FP) &gt; 0:
+            _percision = TP / (TP + FP)
+        else:
+            _percision = 0.0
+        if (TP + FN) &gt; 0:
+            _recall = TP / (TP + FN)
+        else:
+            _recall = 0.0
+        if  (2 * TP + FP + FN) &gt; 0:
+            _f_measure = (2 * TP) / (2 * TP + FP + FN)
+        else:
+            _f_measure = 0.0
+        print '{:6}: Precision={}, Recall={}, F-measure={}'.format(tag, _percision,
+                                                                   _recall, _f_measure)
 </pre>
 
 

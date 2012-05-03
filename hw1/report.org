@@ -57,19 +57,12 @@ most searches), I used [[http://breakingcode.wordpress.com/2010/06/29/google-sea
    offer. Perhaps it's my lack of competence as a tagger for English
    words.. 
 
-*** TODO Manual Tagging:
- Review the tagging of the new text separately (2 analyses) and
- compare your tagging results. Report the list of words on which your
- 2 manual tagging decisions are different (write a function to
- compare two taggings of the same text saved in 2 different tagged
- files.) Show the differences between each of your tags and the tags
- produced by the automatic tagger. Report how long it took you to
- check the tagging of 50 sentences.  
-
 
 This is the code I used:
 #+INCLUDE: "code.py" src python
 
+In order to compare two taggers, I wrote the function:
+#+INCLUDE "code2.py" src python :lines "265-277"
 ** Gathering basic statistics
    *IMPORTANT:* the code snippets in this section use the =tagged_words=
    corpus (NOT =tagged_sents=).
@@ -82,10 +75,10 @@ This is the code I used:
    [[file:ambiguity-fig1.png]]
    
    I used the following code:
-#+INCLUDE "code2.py" src python :lines "1-39"
+#+INCLUDE "code2.py" src python :lines "1-41"
    
    For the requested functions, This code was used:
-#+INCLUDE "code2.py" src python :lines "34-68"
+#+INCLUDE "code2.py" src python :lines "44-73"
 
 ** Is there a correlation between word size or frequency and ambiguity level?
    To try and answer this question, I plotted the requested 3D graph
@@ -119,12 +112,14 @@ statistical significance.
 
 This is the code used (with minor changes or commenting
 out, to create the different graphs):
-#+INCLUDE "code2.py" src python :lines "66-116"
-* Unigram and Affix Tagger [0/2]
-** TODO Unigram Tagger
+#+INCLUDE "code2.py" src python :lines "76-122"
+* Unigram and Affix Tagger [2/2]
+** DONE Unigram Tagger
+   CLOSED: [2012-05-03 Thu 09:11]
    This is the code for the Unigram Tagger:
-#+INCLUDE "code2.py" src python :lines "118-148"
-** TODO Affix Tagger
+#+INCLUDE "code2.py" src python :lines "125-151"
+** DONE Affix Tagger
+   CLOSED: [2012-05-03 Thu 09:11]
 This is the code used:
 #+INCLUDE "code2.py" src python :lines "153-253"
 To produce this output (=H_param= was 0):
@@ -153,7 +148,7 @@ choosen cutoff value is 1, which scores 0.182246809581 on the testset.
 
 Later, I added this function to optimize the =H_param= AND the cutoff
 value:
-#+INCLUDE "code2.py" src python :lines "258-266"
+#+INCLUDE "code2.py" src python :lines "254-263"
 
 This produced these values:
 #+BEGIN_EXAMPLE
@@ -366,27 +361,30 @@ but for most of them - I can't really imagine why they are so good.
 I have to admit that I don't recognize any of these as a suffix I
 studies in linguistics.
 
-* Fine-grained Error Analysis [1/5]
+* Fine-grained Error Analysis [2/5]
 ** DONE Known vs. Unknown Accuracy
    CLOSED: [2012-05-03 Thu 01:29]
+
    I propose to identify known words as words that appeared more than
    $N$ times in the training corpus, where $N>0$ (I'll use $N=1$, but that's just
    one option).
 
    I suggest adding the code (for $N=1$): \\
-   ~self.wordset = set(word for (word, tag) in sentence in train)~
+   ~self.wordset = set([word for sentence in train for (word, tag) in sentence])~
    
    To every tagger. This could be used in the =evaluate2= method, in
    the following manner:
-#+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "70-88"
+#+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "70-87"
 
 
-** TODO Per Tag Precision and Recall
+** DONE Per Tag Precision and Recall
+   CLOSED: [2012-05-03 Thu 10:21]
 
-#+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "89-119"
+#+INCLUDE "/home/lxmonk/git/nltk/nltk/tag/api.py" src python :lines "88-129"
 
 
 ** TODO Confusion Matrix
+   The 
 ** TODO SensAitivity to the Size and Structure of the Training Set: Cross-Validation
 ** TODO Stratified Samples
 
