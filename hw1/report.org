@@ -26,6 +26,7 @@
    (1-3 on most searches), I used [[http://breakingcode.wordpress.com/2010/06/29/google-search-python/][this script]] instead. 
 3) This document has some equations that require javascript to run,
    and an internet connection (to http://orgmode.org/ for the functions).
+4) This document looks best on Google's Chrome/Chromium browser.
 
 * Data Exploration [1/1]
 ** DONE Gathering and cleaning up data
