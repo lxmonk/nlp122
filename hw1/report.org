@@ -384,7 +384,7 @@ studies in linguistics.
 
 
 ** TODO Confusion Matrix
-   The 
+   The  
 ** TODO SensAitivity to the Size and Structure of the Training Set: Cross-Validation
 ** TODO Stratified Samples
 
